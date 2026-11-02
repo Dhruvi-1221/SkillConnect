@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Content - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 540px;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚩</div>
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Submit Content Report</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Reporting {{ target_type|lower }} #{{ target_id }} to platform moderation
+    </p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.target_type }}
+      {{ form.target_id }}
+
+      <div class="form-group">
+        <label class="form-label" for="id_reason">Violation Reason *</label>
+        {{ form.reason }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_details">Additional Details</label>
+        {{ form.details }}
+        <span class="form-help">Explain why this content violates community guidelines.</span>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-danger btn-block btn-lg">Submit Report</button>
+        <a href="javascript:history.back()" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

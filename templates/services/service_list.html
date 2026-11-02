@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Campus Services - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Header with search & filters -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Campus Services Marketplace</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Hire fellow verified college students for projects, designs, shoots, and tutoring</p>
+    </div>
+
+    {% if user.is_student %}
+      <a href="{% url 'create_service' %}" class="btn btn-primary">➕ Offer a Service</a>
+    {% endif %}
+  </div>
+
+  <!-- Filters Row -->
+  <div class="card" style="padding: 1.25rem; margin-bottom: 2rem;">
+    <form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
+        <input type="text" name="q" class="form-input" placeholder="Search service title or provider..." value="{{ query }}">
+      </div>
+      <div style="width: 180px;">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if selected_category and selected_category.slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="width: 170px;">
+        <select name="sort" class="form-select" onchange="this.form.submit()">
+          <option value="recent" {% if sort_by == 'recent' %}selected{% endif %}>Newest First</option>
+          <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      {% if query or selected_category or sort_by != 'recent' %}
+        <a href="{% url 'service_list' %}" class="btn btn-secondary">Reset</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Services Grid -->
+  <div class="service-grid">
+    {% for s in services %}
+      <div class="service-card">
+        {% if s.image %}
+          <img src="{{ s.image.url }}" alt="{{ s.title }}" class="service-thumbnail">
+        {% else %}
+          <div class="service-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--primary-light); color: var(--primary);">
+            💼
+          </div>
+        {% endif %}
+        <div class="service-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            {% if s.category %}
+              <span class="badge badge-category">{{ s.category.name }}</span>
+            {% endif %}
+            <span style="font-size: 0.8rem; color: var(--text-muted);">⏱ {{ s.delivery_time_days }} days</span>
+          </div>
+
+          <h3 class="service-title">
+            <a href="{% url 'service_detail' s.id %}">{{ s.title }}</a>
+          </h3>
+
+          <p class="service-desc">{{ s.description|truncatewords:20 }}</p>
+
+          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;">
+            <a href="{% url 'profile' s.student.username %}">
+              <img src="{{ s.student.profile.get_avatar_url }}" alt="{{ s.student.username }}" class="avatar avatar-sm">
+            </a>
+            <div>
+              <a href="{% url 'profile' s.student.username %}" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                {{ s.student.get_display_name }}
+              </a>
+              {% if s.student.student_profile.is_verified %}
+                <span class="badge badge-verified" style="font-size: 0.7rem; padding: 0.1rem 0.35rem;">✓</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="service-footer">
+            <div class="service-price">₹{{ s.price }}</div>
+            <a href="{% url 'service_detail' s.id %}" class="btn btn-primary btn-sm">
+              View & Order &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="empty-state-icon">💼</div>
+        <h3 class="empty-state-title">No services found</h3>
+        <p class="empty-state-text">No active services matched your filter. Try adjusting your query or category.</p>
+        <a href="{% url 'service_list' %}" class="btn btn-primary">Browse All Services</a>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

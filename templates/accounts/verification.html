@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Identity Verification - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <div class="brand-icon" style="margin: 0 auto 1rem; width: 44px; height: 44px; font-size: 1.3rem;">🎓</div>
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Student Verification</h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">
+      Verify your college status to receive the official <strong>Verified Student</strong> badge and build trust with clients.
+    </p>
+  </div>
+
+  <!-- Verification Status Banner -->
+  <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; border-left: 6px solid {% if student_profile.verification_status == 'VERIFIED' %}var(--success){% elif student_profile.verification_status == 'REJECTED' %}var(--danger){% else %}var(--warning){% endif %};">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+          Current Status
+        </div>
+        <div style="font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
+          {% if student_profile.verification_status == 'VERIFIED' %}
+            <span style="color: var(--success);">✓ Verified Student</span>
+          {% elif student_profile.verification_status == 'REJECTED' %}
+            <span style="color: var(--danger);">✕ Verification Rejected</span>
+          {% else %}
+            <span style="color: var(--warning);">⏳ Pending Administrator Review</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if student_profile.verification_status == 'VERIFIED' %}
+        <span class="badge badge-verified" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+          Badge Active on Profile
+        </span>
+      {% endif %}
+    </div>
+
+    {% if student_profile.verification_notes %}
+      <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: var(--bg); border-radius: var(--radius-md); font-size: 0.9rem;">
+        <strong>Admin Remarks:</strong> {{ student_profile.verification_notes }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Submission Form -->
+  <div class="form-card">
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">
+      {% if student_profile.verification_status == 'VERIFIED' %}
+        Update College Credentials
+      {% elif student_profile.verification_status == 'REJECTED' %}
+        Resubmit Verification Details
+      {% else %}
+        Submit College Credentials
+      {% endif %}
+    </h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+      Provide accurate university enrollment information. You may upload a photo of your Student ID card.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_college_name">College / University Name *</label>
+        {{ form.college_name }}
+        {% if form.college_name.errors %}<div class="form-error">{{ form.college_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="id_course">Course / Degree *</label>
+          {{ form.course }}
+          {% if form.course.errors %}<div class="form-error">{{ form.course.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_year_of_study">Year of Study *</label>
+          {{ form.year_of_study }}
+          {% if form.year_of_study.errors %}<div class="form-error">{{ form.year_of_study.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="id_student_id">Roll / Enrollment ID Number</label>
+          {{ form.student_id }}
+          {% if form.student_id.errors %}<div class="form-error">{{ form.student_id.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_college_email">Official College Email (Optional)</label>
+          {{ form.college_email }}
+          {% if form.college_email.errors %}<div class="form-error">{{ form.college_email.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_college_id_card">Upload College ID Card</label>
+        {{ form.college_id_card }}
+        {% if student_profile.college_id_card %}
+          <div style="margin-top: 0.5rem; font-size: 0.85rem;">
+            Currently uploaded: <a href="{{ student_profile.college_id_card.url }}" target="_blank" style="color: var(--primary); text-decoration: underline;">View Current Document</a>
+          </div>
+        {% endif %}
+        <span class="form-help">Accepted formats: JPG, PNG, WEBP. Max file size: 5MB.</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+        Submit For Review 📑
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.get_display_name }} - SkillConnect Profile{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <!-- Profile Header Card -->
+  <div class="card" style="margin-bottom: 2rem; overflow: hidden;">
+    <!-- Cover Background -->
+    <div style="height: 160px; background: linear-gradient(135deg, #4f46e5, #0ea5e9); position: relative;">
+      <div style="position: absolute; right: 20px; top: 20px;">
+        <button class="btn btn-secondary btn-sm btn-share" data-url="{{ request.build_absolute_uri }}" style="background: rgba(255,255,255,0.9);">
+          ↗ Share Profile
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Details Row -->
+    <div style="padding: 0 2rem 2rem; position: relative;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: -60px; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: flex-end; gap: 1.5rem;">
+          <img src="{{ profile_user.profile.get_avatar_url }}" alt="{{ profile_user.username }}" class="avatar avatar-lg" style="width: 120px; height: 120px; border-width: 4px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <h1 style="font-size: 1.75rem; font-weight: 800;">{{ profile_user.get_display_name }}</h1>
+              {% if student_profile and student_profile.is_verified %}
+                <span class="badge badge-verified" title="Official Verified College Student">✓ Verified Student</span>
+              {% elif student_profile and not student_profile.is_verified %}
+                <span class="badge badge-pending" title="Pending Admin Verification">Verification Pending</span>
+              {% endif %}
+            </div>
+
+            {% if student_profile %}
+              <div style="font-size: 0.92rem; color: var(--text-muted); font-weight: 500;">
+                {{ student_profile.college_name }} &bull; {{ student_profile.course }} ({{ student_profile.year_of_study }})
+              </div>
+            {% else %}
+              <div style="font-size: 0.92rem; color: var(--text-muted); font-weight: 500;">
+                SkillConnect Community Member
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          {% if is_self %}
+            <a href="{% url 'edit_profile' %}" class="btn btn-secondary">⚙️ Edit Profile</a>
+            {% if profile_user.is_student %}
+              <a href="{% url 'create_post' %}" class="btn btn-primary">➕ New Post</a>
+            {% endif %}
+          {% else %}
+            {% if user.is_authenticated %}
+              <button class="btn {% if is_following %}btn-secondary{% else %}btn-primary{% endif %} btn-follow-toggle" data-username="{{ profile_user.username }}">
+                {% if is_following %}Following{% else %}Follow{% endif %}
+              </button>
+              <a href="{% url 'start_chat' profile_user.username %}" class="btn btn-secondary">💬 Message</a>
+              <a href="{% url 'submit_report' 'USER' profile_user.id %}" class="btn btn-secondary" title="Report Account">🚩</a>
+            {% else %}
+              <a href="{% url 'login' %}" class="btn btn-primary">Follow</a>
+              <a href="{% url 'login' %}" class="btn btn-secondary">💬 Message</a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Bio -->
+      {% if profile_user.profile.bio %}
+        <p style="font-size: 0.95rem; line-height: 1.6; max-width: 800px; margin-bottom: 1.25rem;">
+          {{ profile_user.profile.bio }}
+        </p>
+      {% endif %}
+
+      <!-- Skills Chips -->
+      {% if student_profile and student_profile.skills.exists %}
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Skills:</span>
+          {% for skill in student_profile.skills.all %}
+            <span class="badge badge-tag" style="padding: 0.35rem 0.75rem; font-size: 0.82rem;">
+              {{ skill.name }}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Stats Bar -->
+      <div style="display: flex; gap: 2rem; border-top: 1px solid var(--border); padding-top: 1.25rem; flex-wrap: wrap;">
+        {% if student_profile %}
+          <div>
+            <span style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">★ {{ student_profile.average_rating }}</span>
+            <span style="font-size: 0.82rem; color: var(--text-muted); display: block;">Rating ({{ student_profile.reviews_count }} reviews)</span>
+          </div>
+          <div>
+            <span style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">{{ student_profile.completed_orders_count }}</span>
+            <span style="font-size: 0.82rem; color: var(--text-muted); display: block;">Orders Completed</span>
+          </div>
+        {% endif %}
+        <div>
+          <span style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);" id="followersCount">{{ followers_count }}</span>
+          <span style="font-size: 0.82rem; color: var(--text-muted); display: block;">Followers</span>
+        </div>
+        <div>
+          <span style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">{{ following_count }}</span>
+          <span style="font-size: 0.82rem; color: var(--text-muted); display: block;">Following</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content Tabs -->
+  <div style="margin-bottom: 2rem;">
+    <div style="display: flex; gap: 1rem; border-bottom: 2px solid var(--border); margin-bottom: 1.75rem;">
+      <button class="tab-btn active" onclick="switchProfileTab('postsTab', this)">
+        🖼 Portfolio Posts ({{ posts|length }})
+      </button>
+      {% if profile_user.is_student %}
+        <button class="tab-btn" onclick="switchProfileTab('servicesTab', this)">
+          💼 Services ({{ services|length }})
+        </button>
+        <button class="tab-btn" onclick="switchProfileTab('reviewsTab', this)">
+          ★ Reviews & Ratings ({{ reviews|length }})
+        </button>
+      {% endif %}
+    </div>
+
+    <!-- Posts Tab -->
+    <div id="postsTab" class="profile-tab-content">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+        {% for post in posts %}
+          <div class="card" style="overflow: hidden;">
+            <a href="{% url 'post_detail' post.id %}">
+              <img src="{{ post.image.url }}" alt="{{ post.caption|truncatewords:4 }}" style="height: 220px; width: 100%; object-fit: cover;">
+            </a>
+            <div style="padding: 1rem;">
+              <p style="font-size: 0.88rem; margin-bottom: 0.5rem; line-height: 1.4;">{{ post.caption|truncatewords:15 }}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+                <span>♥ {{ post.likes.count }} likes &bull; 💬 {{ post.comments.count }}</span>
+                <span>{{ post.created_at|date:"M d, Y" }}</span>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <div class="empty-state-icon">📸</div>
+            <h3 class="empty-state-title">No posts uploaded yet</h3>
+            <p class="empty-state-text">This student has not shared portfolio posts yet.</p>
+            {% if is_self %}
+              <a href="{% url 'create_post' %}" class="btn btn-primary">Create Your First Post</a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Services Tab -->
+    {% if profile_user.is_student %}
+      <div id="servicesTab" class="profile-tab-content" style="display: none;">
+        <div class="service-grid">
+          {% for s in services %}
+            <div class="service-card">
+              {% if s.image %}
+                <img src="{{ s.image.url }}" alt="{{ s.title }}" class="service-thumbnail">
+              {% else %}
+                <div class="service-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: var(--primary-light); color: var(--primary);">
+                  💼
+                </div>
+              {% endif %}
+              <div class="service-content">
+                {% if s.category %}
+                  <span class="badge badge-category" style="align-self: flex-start; margin-bottom: 0.5rem;">{{ s.category.name }}</span>
+                {% endif %}
+                <h4 class="service-title">
+                  <a href="{% url 'service_detail' s.id %}">{{ s.title }}</a>
+                </h4>
+                <p class="service-desc">{{ s.description|truncatewords:18 }}</p>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                  ⏱ Est. Delivery: {{ s.delivery_time_days }} days
+                </div>
+                <div class="service-footer">
+                  <div class="service-price">₹{{ s.price }}</div>
+                  <a href="{% url 'service_detail' s.id %}" class="btn btn-primary btn-sm">
+                    Book Service 🚀
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-state-icon">💼</div>
+              <h3 class="empty-state-title">No services listed yet</h3>
+              <p class="empty-state-text">Check back later or message this student for custom requests.</p>
+              {% if is_self %}
+                <a href="{% url 'create_service' %}" class="btn btn-primary">Add Your First Service</a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Reviews Tab -->
+      <div id="reviewsTab" class="profile-tab-content" style="display: none;">
+        <div style="max-width: 800px; display: flex; flex-direction: column; gap: 1.25rem;">
+          {% for r in reviews %}
+            <div class="card" style="padding: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                  <a href="{% url 'profile' r.customer.username %}">
+                    <img src="{{ r.customer.profile.get_avatar_url }}" alt="{{ r.customer.username }}" class="avatar avatar-sm">
+                  </a>
+                  <div>
+                    <a href="{% url 'profile' r.customer.username %}" style="font-weight: 700; font-size: 0.92rem;">
+                      {{ r.customer.get_display_name }}
+                    </a>
+                    <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">
+                      Order: {{ r.order.service.title|default:"Service Order" }}
+                    </span>
+                  </div>
+                </div>
+                <div style="color: #f59e0b; font-weight: 700; font-size: 1.1rem;">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              <p style="font-size: 0.92rem; color: #334155; line-height: 1.5;">{{ r.comment }}</p>
+              <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                {{ r.created_at|date:"F d, Y" }}
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">
+              <div class="empty-state-icon">⭐</div>
+              <h3 class="empty-state-title">No reviews yet</h3>
+              <p class="empty-state-text">Reviews from customers will appear here once orders are successfully completed.</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: var(--transition);
+  }
+  .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+</style>
+<script>
+  function switchProfileTab(tabId, btn) {
+    document.querySelectorAll('.profile-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    btn.classList.add('active');
+  }
+</script>
+{% endblock %}

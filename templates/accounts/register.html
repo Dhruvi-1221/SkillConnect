@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 620px;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Join SkillConnect</h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">Choose how you want to use the platform to get started</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-error">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
+      <!-- Role Selection -->
+      <div class="form-group">
+        <label class="form-label" style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">Select Your Role</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <label style="border: 2px solid var(--border); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.35rem; transition: var(--transition);" id="roleCustomerCard">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: 700;">Customer</span>
+              <input type="radio" name="role" value="CUSTOMER" id="roleCustomer" {% if form.role.value == 'CUSTOMER' or not form.role.value %}checked{% endif %}>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">I want to hire / book student services</span>
+          </label>
+
+          <label style="border: 2px solid var(--border); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.35rem; transition: var(--transition);" id="roleStudentCard">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: 700;">Student Talent</span>
+              <input type="radio" name="role" value="STUDENT" id="roleStudent" {% if form.role.value == 'STUDENT' %}checked{% endif %}>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">I want to showcase skills & offer services</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Basic User Fields -->
+      <div class="form-group">
+        <label class="form-label" for="id_full_name">Full Name</label>
+        {{ form.full_name }}
+        {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="id_username">Username</label>
+          {{ form.username }}
+          {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_email">Email Address</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="id_password">Password</label>
+          {{ form.password }}
+          {% if form.password.errors %}<div class="form-error">{{ form.password.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_confirm_password">Confirm Password</label>
+          {{ form.confirm_password }}
+          {% if form.confirm_password.errors %}<div class="form-error">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Student Specific Section (Collapsible) -->
+      <div id="studentFieldsSection" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); display: none;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--primary);">
+          🎓 College Verification Details
+        </h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Students must provide legitimate college enrollment information to receive client orders.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="id_college_name">College / University Name *</label>
+          {{ form.college_name }}
+          {% if form.college_name.errors %}<div class="form-error">{{ form.college_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="id_course">Course / Degree *</label>
+            {{ form.course }}
+            {% if form.course.errors %}<div class="form-error">{{ form.course.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_year_of_study">Year of Study *</label>
+            {{ form.year_of_study }}
+            {% if form.year_of_study.errors %}<div class="form-error">{{ form.year_of_study.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="id_student_id">Student ID / Roll No.</label>
+            {{ form.student_id }}
+            {% if form.student_id.errors %}<div class="form-error">{{ form.student_id.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_college_email">College Email (optional)</label>
+            {{ form.college_email }}
+            {% if form.college_email.errors %}<div class="form-error">{{ form.college_email.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_college_id_card">College ID Card Photo (optional for initial signup)</label>
+          {{ form.college_id_card }}
+          <span class="form-help">You can also upload this later in the verification tab to earn your Verified badge.</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1.5rem;">
+        Create Account 🚀
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+      Already have an account? <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 600;">Log In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const studentRadio = document.getElementById('roleStudent');
+  const customerRadio = document.getElementById('roleCustomer');
+  const studentSection = document.getElementById('studentFieldsSection');
+  const studentCard = document.getElementById('roleStudentCard');
+  const customerCard = document.getElementById('roleCustomerCard');
+
+  function updateRoleVisibility() {
+    if (studentRadio.checked) {
+      studentSection.style.display = 'block';
+      studentCard.style.borderColor = 'var(--primary)';
+      customerCard.style.borderColor = 'var(--border)';
+    } else {
+      studentSection.style.display = 'none';
+      customerCard.style.borderColor = 'var(--primary)';
+      studentCard.style.borderColor = 'var(--border)';
+    }
+  }
+
+  studentRadio.addEventListener('change', updateRoleVisibility);
+  customerRadio.addEventListener('change', updateRoleVisibility);
+  updateRoleVisibility();
+</script>
+{% endblock %}

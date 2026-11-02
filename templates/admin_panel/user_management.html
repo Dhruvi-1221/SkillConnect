@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management - SkillConnect Admin{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">User Management</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Manage accounts, roles, access permissions, and account suspensions</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+  </div>
+
+  <!-- Search & Role Filter -->
+  <div class="card" style="padding: 1.25rem; margin-bottom: 2rem;">
+    <form method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 240px;">
+        <input type="text" name="q" class="form-input" placeholder="Search by username, name, or email..." value="{{ query }}">
+      </div>
+      <div style="width: 200px;">
+        <select name="role" class="form-select" onchange="this.form.submit()">
+          <option value="">All Roles</option>
+          <option value="STUDENT" {% if role_filter == 'STUDENT' %}selected{% endif %}>Students</option>
+          <option value="CUSTOMER" {% if role_filter == 'CUSTOMER' %}selected{% endif %}>Customers</option>
+          <option value="ADMIN" {% if role_filter == 'ADMIN' %}selected{% endif %}>Administrators</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      {% if query or role_filter %}
+        <a href="{% url 'admin_users' %}" class="btn btn-secondary">Reset</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Users Table -->
+  <div class="card table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Verification Badge</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <img src="{{ u.profile.get_avatar_url }}" alt="{{ u.username }}" class="avatar avatar-sm">
+                <div>
+                  <a href="{% url 'profile' u.username %}" style="font-weight: 700; color: var(--text-main);">
+                    {{ u.get_display_name }}
+                  </a>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">@{{ u.username }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ u.email }}</td>
+            <td>
+              <span class="badge {% if u.role == 'STUDENT' %}badge-category{% elif u.role == 'ADMIN' %}badge-tag{% else %}badge-tag{% endif %}">
+                {{ u.get_role_display }}
+              </span>
+            </td>
+            <td>
+              {% if u.is_student %}
+                {% if u.student_profile.is_verified %}
+                  <span class="badge badge-verified">✓ Verified</span>
+                {% elif u.student_profile.verification_status == 'REJECTED' %}
+                  <span class="badge badge-rejected">Rejected</span>
+                {% else %}
+                  <span class="badge badge-pending">Pending</span>
+                {% endif %}
+              {% else %}
+                <span style="color: var(--text-light); font-size: 0.8rem;">N/A (Customer)</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if u.is_active %}
+                <span class="badge badge-verified">Active</span>
+              {% else %}
+                <span class="badge badge-rejected">Suspended</span>
+              {% endif %}
+            </td>
+            <td>{{ u.date_joined|date:"M d, Y" }}</td>
+            <td>
+              <div style="display: flex; gap: 0.4rem;">
+                <a href="{% url 'profile' u.username %}" class="btn btn-outline btn-sm">Profile</a>
+                {% if u != user %}
+                  <form action="{% url 'admin_toggle_user' u.id %}" method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    {% if u.is_active %}
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Suspend user {{ u.username }}?')">
+                        Block
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Unblock user {{ u.username }}?')">
+                        Unblock
+                      </button>
+                    {% endif %}
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              No users found matching your criteria.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

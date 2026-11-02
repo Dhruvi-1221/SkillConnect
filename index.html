@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillConnect - Discover Skills. Connect with Students. Get Things Done.</title>
+  <meta name="description" content="SkillConnect connects talented college students offering photography, graphic design, tutoring, coding, and creative services with customers at student-friendly prices.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <style>
+    /* ==========================================================================
+       SkillConnect - Modern Student Social Marketplace Stylesheet
+       Pure Standalone CSS - Fully Responsive & Zero Dependencies
+       ========================================================================== */
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-dark: #3730a3;
+      --accent: #0ea5e9;
+      --accent-light: #e0f2fe;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #ef4444;
+
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-focus: #818cf8;
+
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Reset & Box Sizing */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    /* Layout Containers */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .brand-name {
+      color: var(--primary);
+    }
+    .brand-name span {
+      color: var(--text-main);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 1.5rem;
+      position: relative;
+    }
+
+    .nav-search-input {
+      width: 100%;
+      padding: 0.55rem 1rem 0.55rem 2.4rem;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .nav-search-input:focus {
+      background-color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .nav-search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.92rem;
+      padding: 0.45rem 0.65rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-sm {
+      padding: 0.45rem 1rem;
+      font-size: 0.88rem;
+    }
+
+    .btn-md {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.92rem;
+    }
+
+    .btn-lg {
+      padding: 0.85rem 1.85rem;
+      font-size: 1.05rem;
+      border-radius: var(--radius-lg);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: #fff;
+      color: var(--text-main);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+      border-color: var(--border-focus);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-verified {
+      background-color: var(--success-light);
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-category {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 4.5rem 0 3.5rem;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      text-align: center;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background-color: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      color: #0f172a;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 2.2rem;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    /* Hero Stats Card */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 720px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 1.5rem 2rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-item p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Content Section */
+    .section {
+      padding: 4.5rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* Filter Tabs & Search Bar for Explore Skills */
+    .explore-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-pill:hover, .filter-pill.active {
+      background-color: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+    }
+
+    .explore-search-box {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .explore-search-input {
+      flex: 1;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .explore-search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    /* Service Cards Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .service-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-focus);
+    }
+
+    .service-image-wrap {
+      height: 190px;
+      background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+    }
+
+    .service-badge-pill {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+    }
+
+    .service-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .service-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .service-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+      line-height: 1.35;
+    }
+
+    .service-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+      flex: 1;
+    }
+
+    /* Student Provider Info */
+    .provider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+
+    .provider-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .provider-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+    }
+
+    .provider-details h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .provider-details p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .service-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .service-price {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .service-price span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Step Cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 2.2rem 2rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    /* Categories Grid */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .category-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+
+    .category-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      background-color: var(--primary-light);
+    }
+
+    .category-icon {
+      font-size: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .category-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Booking Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      max-width: 540px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-main);
+    }
+
+    /* Toast Alert */
+    .toast-alert {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0f172a;
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-xl);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 3rem 0 2rem;
+      margin-top: auto;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.2rem;
+      }
+      .hero-actions {
+        flex-direction: column;
+      }
+      .hero-stats {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .nav-search {
+        display: none;
+      }
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-name">Skill<span>Connect</span></div>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="nav-search">
+        <span class="nav-search-icon">🔍</span>
+        <input type="text" id="topSearchInput" class="nav-search-input" placeholder="Search photography, graphic design, coding, tutoring...">
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="nav-links">
+        <a href="#explore" class="nav-link">Explore Skills</a>
+        <a href="#how-it-works" class="nav-link">About Us</a>
+        <a href="#contact" class="nav-link">Help</a>
+        <button onclick="openModal('Login', 'To log in and manage your account, run `python manage.py runserver` to open the full Django backend!')" class="btn btn-outline btn-sm">Log In</button>
+        <button onclick="openModal('Get Started', 'Sign up as a Student to offer services, or as a Customer to hire student talent!')" class="btn btn-primary btn-sm">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <!-- Tagline Pill -->
+        <div class="hero-tag">
+          <span>🎓</span> The College Skill Marketplace
+        </div>
+
+        <!-- Main Heading -->
+        <h1 class="hero-title">
+          Discover Skills. Connect with Students. <span>Get Things Done.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="hero-subtitle">
+          SkillConnect connects talented college students offering photography, graphic design, tutoring, coding, makeup, and creative services with customers and campus clubs looking for quality work at student-friendly prices.
+        </p>
+
+        <!-- The 2 Big Action Buttons -->
+        <div class="hero-actions">
+          <a href="#explore" class="btn btn-primary btn-lg">Explore Skills & Services 🚀</a>
+          <button onclick="filterCategory('all'); document.getElementById('explore').scrollIntoView({behavior: 'smooth'});" class="btn btn-secondary btn-lg">Offer Your Skills 🎨</button>
+        </div>
+
+        <!-- Key Platform Stats -->
+        <div class="hero-stats">
+          <div class="stat-item">
+            <h3>100%</h3>
+            <p>Verified College Students</p>
+          </div>
+          <div class="stat-item">
+            <h3>15+</h3>
+            <p>Creative & Tech Categories</p>
+          </div>
+          <div class="stat-item">
+            <h3>₹0</h3>
+            <p>Zero Platform Hidden Fees</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLORE SKILLS & SERVICES SECTION -->
+    <section class="section" id="explore" style="background-color: #f1f5f9;">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-category" style="font-size: 0.85rem; padding: 0.35rem 0.9rem; margin-bottom: 0.75rem;">Verified Campus Talent</span>
+          <h2 class="section-title">Explore Skills & Campus Services</h2>
+          <p class="section-subtitle">Hire authentic student creators with verified ID cards, clear fixed pricing in ₹, and real ratings</p>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="explore-toolbar">
+          <div class="explore-search-box">
+            <input type="text" id="liveSearchInput" class="explore-search-input" placeholder="Search by service name, student name, or skill (e.g. Photography, Logo, Django)...">
+            <button onclick="filterServices()" class="btn btn-primary btn-md">Search</button>
+          </div>
+
+          <!-- Category Pills -->
+          <div class="filter-pills">
+            <button class="filter-pill active" onclick="filterCategory('all', this)">All Skills</button>
+            <button class="filter-pill" onclick="filterCategory('photography', this)">📷 Photography</button>
+            <button class="filter-pill" onclick="filterCategory('design', this)">🎨 Graphic Design</button>
+            <button class="filter-pill" onclick="filterCategory('coding', this)">💻 Web Development</button>
+            <button class="filter-pill" onclick="filterCategory('mehndi', this)">✨ Mehndi Art</button>
+            <button class="filter-pill" onclick="filterCategory('makeup', this)">💄 Makeup & Styling</button>
+            <button class="filter-pill" onclick="filterCategory('video', this)">🎬 Video Editing</button>
+            <button class="filter-pill" onclick="filterCategory('tutoring', this)">📚 Academic Tutoring</button>
+          </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="services-grid" id="servicesGrid">
+
+          <!-- Card 1: Photography -->
+          <div class="service-card" data-category="photography" data-title="Event & Portrait Photography" data-provider="Aarav Patel">
+            <div class="service-image-wrap" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">
+              📷
+              <span class="badge badge-category service-badge-pill">Photography</span>
+            </div>
+            <div class="service-content">
+              <div class="service-meta">
+                <span>⭐ 4.9 (24 reviews)</span>
+                <span>⏱ 3 Days Delivery</span>
+              </div>
+              <h3 class="service-title">Event & Portrait Photography</h3>
+              <p class="service-desc">Professional DSLR portrait shoots for college convocation, club events, and LinkedIn headshots with high-resolution editing.</p>
+              
+              <div class="provider-row">
+                <div class="provider-info">
+                  <div class="provider-avatar">AP</div>
+                  <div class="provider-details">
+                    <h4>Aarav Patel <span class="badge badge-verified">✓ Verified</span></h4>
+                    <p>GTU • 3rd Year B.Tech</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-footer">
+                <div class="service-price">₹1,500 <span>/ shoot</span></div>
+                <button onclick="openBookingModal('Event & Portrait Photography', 'Aarav Patel', '₹1,500', '3 Days', '📷')" class="btn btn-primary btn-sm">Book Service &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Graphic Design -->
+          <div class="service-card" data-category="design" data-title="Brand Identity & Fest Poster Design" data-provider="Riya Shah">
+            <div class="service-image-wrap" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8);">
+              🎨
+              <span class="badge badge-category service-badge-pill">Graphic Design</span>
+            </div>
+            <div class="service-content">
+              <div class="service-meta">
+                <span>⭐ 5.0 (31 reviews)</span>
+                <span>⏱ 2 Days Delivery</span>
+              </div>
+              <h3 class="service-title">Brand Identity & Fest Poster Design</h3>
+              <p class="service-desc">Eye-catching Instagram banners, college festival event posters, logos, and digital brochures using Figma & Photoshop.</p>
+              
+              <div class="provider-row">
+                <div class="provider-info">
+                  <div class="provider-avatar" style="background: #fdf2f8; color: #db2777;">RS</div>
+                  <div class="provider-details">
+                    <h4>Riya Shah <span class="badge badge-verified">✓ Verified</span></h4>
+                    <p>Nirma University • Design</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-footer">
+                <div class="service-price">₹800 <span>/ design</span></div>
+                <button onclick="openBookingModal('Brand Identity & Fest Poster Design', 'Riya Shah', '₹800', '2 Days', '🎨')" class="btn btn-primary btn-sm">Book Service &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Web Development -->
+          <div class="service-card" data-category="coding" data-title="Full-Stack Python & Web Development" data-provider="Dev Shah">
+            <div class="service-image-wrap" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe);">
+              💻
+              <span class="badge badge-category service-badge-pill">Web Development</span>
+            </div>
+            <div class="service-content">
+              <div class="service-meta">
+                <span>⭐ 4.8 (19 reviews)</span>
+                <span>⏱ 5 Days Delivery</span>
+              </div>
+              <h3 class="service-title">Full-Stack Python & Web Development</h3>
+              <p class="service-desc">Custom web apps, responsive frontend designs, database setup (Django, MySQL, JavaScript) and college project coding assistance.</p>
+              
+              <div class="provider-row">
+                <div class="provider-info">
+                  <div class="provider-avatar" style="background: #eef2ff; color: #4338ca;">DS</div>
+                  <div class="provider-details">
+                    <h4>Dev Shah <span class="badge badge-verified">✓ Verified</span></h4>
+                    <p>IIT Gandhinagar • CS</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-footer">
+                <div class="service-price">₹2,500 <span>/ project</span></div>
+                <button onclick="openBookingModal('Full-Stack Python & Web Development', 'Dev Shah', '₹2,500', '5 Days', '💻')" class="btn btn-primary btn-sm">Book Service &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Mehndi Art -->
+          <div class="service-card" data-category="mehndi" data-title="Bridal & Festive Mehndi Art" data-provider="Krisha Mehta">
+            <div class="service-image-wrap" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">
+              ✨
+              <span class="badge badge-category service-badge-pill">Mehndi Art</span>
+            </div>
+            <div class="service-content">
+              <div class="service-meta">
+                <span>⭐ 5.0 (42 reviews)</span>
+                <span>⏱ 1 Day Delivery</span>
+              </div>
+              <h3 class="service-title">Bridal & Festive Mehndi Art</h3>
+              <p class="service-desc">Intricate Arabic, Indo-Western, and traditional bridal mehndi designs for festive events, family functions, and celebrations.</p>
+              
+              <div class="provider-row">
+                <div class="provider-info">
+                  <div class="provider-avatar" style="background: #fffbeb; color: #b45309;">KM</div>
+                  <div class="provider-details">
+                    <h4>Krisha Mehta <span class="badge badge-verified">✓ Verified</span></h4>
+                    <p>Ahmedabad University • Arts</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-footer">
+                <div class="service-price">₹700 <span>/ session</span></div>
+                <button onclick="openBookingModal('Bridal & Festive Mehndi Art', 'Krisha Mehta', '₹700', '1 Day', '✨')" class="btn btn-primary btn-sm">Book Service &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Makeup & Styling -->
+          <div class="service-card" data-category="makeup" data-title="Party & Event Makeup Styling" data-provider="Anaya Patel">
+            <div class="service-image-wrap" style="background: linear-gradient(135deg, #ffe4e6, #fecdd3);">
+              💄
+              <span class="badge badge-category service-badge-pill">Makeup & Styling</span>
+            </div>
+            <div class="service-content">
+              <div class="service-meta">
+                <span>⭐ 4.9 (18 reviews)</span>
+                <span>⏱ 1 Day Delivery</span>
+              </div>
+              <h3 class="service-title">Party & Event Makeup Styling</h3>
+              <p class="service-desc">Subtle glam, festive party looks, and hairstyle styling for college formals, farewells, and family celebrations.</p>
+              
+              <div class="provider-row">
+                <div class="provider-info">
+                  <div class="provider-avatar" style="background: #fff1f2; color: #be123c;">AP</div>
+                  <div class="provider-details">
+                    <h4>Anaya Patel <span class="badge badge-verified">✓ Verified</span></h4>
+                    <p>LJ University • BBA</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-footer">
+                <div class="service-price">₹1,200 <span>/ look</span></div>
+                <button onclick="openBookingModal('Party & Event Makeup Styling', 'Anaya Patel', '₹1,200', '1 Day', '💄')" class="btn btn-primary btn-sm">Book Service &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6: Video Editing -->
+          <div class="service-card" data-category="video" data-title="Cinematic Video & Reels Editing" data-provider="Rohan Joshi">
+            <div class="service-image-wrap" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">
+              🎬
+              <span class="badge badge-category service-badge-pill">Video Editing</span>
+            </div>
+            <div class="service-content">
+              <div class="service-meta">
+                <span>⭐ 4.7 (15 reviews)</span>
+                <span>⏱ 2 Days Delivery</span>
+              </div>
+              <h3 class="service-title">Cinematic Video & Reels Editing</h3>
+              <p class="service-desc">Dynamic transitions, trending audio syncing, color grading, and subtitles for YouTube shorts, campus fests, and promotional reels.</p>
+              
+              <div class="provider-row">
+                <div class="provider-info">
+                  <div class="provider-avatar" style="background: #f5f3ff; color: #6d28d9;">RJ</div>
+                  <div class="provider-details">
+                    <h4>Rohan Joshi <span class="badge badge-verified">✓ Verified</span></h4>
+                    <p>DAIICT • Information Tech</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-footer">
+                <div class="service-price">₹950 <span>/ reel</span></div>
+                <button onclick="openBookingModal('Cinematic Video & Reels Editing', 'Rohan Joshi', '₹950', '2 Days', '🎬')" class="btn btn-primary btn-sm">Book Service &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section" id="how-it-works" style="background: #ffffff;">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">How SkillConnect Works</h2>
+          <p class="section-subtitle">A seamless experience for both campus creators and customers</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3 class="feature-title">1. Discover Talent</h3>
+            <p class="feature-desc">Browse student portfolios, real project posts, and verified badges from campus designers, photographers, and coders.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3 class="feature-title">2. Chat & Book</h3>
+            <p class="feature-desc">Communicate directly through our built-in real-time chat, specify your requirements, and book services transparently.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <h3 class="feature-title">3. Track & Review</h3>
+            <p class="feature-desc">Watch your order progress through our step-by-step visual tracker and leave genuine ratings upon completion.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Skill Categories -->
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Popular Skill Categories</h2>
+          <p class="section-subtitle">Click any category to immediately view matching student services</p>
+        </div>
+
+        <div class="category-grid">
+          <div class="category-card" onclick="filterCategoryFromCard('photography')">
+            <div class="category-icon">📷</div>
+            <div class="category-name">Photography</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('design')">
+            <div class="category-icon">🎨</div>
+            <div class="category-name">Graphic Design</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('coding')">
+            <div class="category-icon">💻</div>
+            <div class="category-name">Web Development</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('mehndi')">
+            <div class="category-icon">✨</div>
+            <div class="category-name">Mehndi Art</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('makeup')">
+            <div class="category-icon">💄</div>
+            <div class="category-name">Makeup & Styling</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('video')">
+            <div class="category-icon">🎬</div>
+            <div class="category-name">Video Editing</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('tutoring')">
+            <div class="category-icon">📚</div>
+            <div class="category-name">Academic Tutoring</div>
+          </div>
+          <div class="category-card" onclick="filterCategoryFromCard('all')">
+            <div class="category-icon">🧁</div>
+            <div class="category-name">All Services</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Interactive Booking / Info Modal -->
+  <div class="modal-backdrop" id="bookingModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" id="modalIcon">💼</div>
+      <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.25rem;" id="modalTitle">Service Title</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Provided by <strong id="modalProvider">Student Name</strong> • <span class="badge badge-verified">✓ Verified Student</span></p>
+
+      <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 0.9rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span style="color: var(--text-muted);">Package Price:</span>
+          <strong style="color: var(--primary); font-size: 1.1rem;" id="modalPrice">₹1,500</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted);">Turnaround Time:</span>
+          <strong id="modalDelivery">3 Days</strong>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Project Requirements / Note for Student:</label>
+        <textarea id="modalRequirementText" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.9rem; outline: none;" placeholder="Tell the student what you need (e.g. event date, dimensions, style)..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button onclick="closeModal()" class="btn btn-secondary btn-sm">Close</button>
+        <button onclick="confirmBooking()" class="btn btn-primary btn-sm">Confirm Booking Request 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-alert" id="toastAlert">
+    <span>✅</span>
+    <span id="toastMsg">Action successful!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">⚡ SkillConnect</div>
+        <div class="footer-links">
+          <a href="#how-it-works">About</a>
+          <a href="#explore">Explore Skills</a>
+          <a href="#categories">Categories</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 SkillConnect. The Campus Skill Marketplace. Built for students & campus talent.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    // Live Search Filtering
+    const liveSearchInput = document.getElementById('liveSearchInput');
+    const topSearchInput = document.getElementById('topSearchInput');
+
+    if (liveSearchInput) {
+      liveSearchInput.addEventListener('input', filterServices);
+    }
+    if (topSearchInput) {
+      topSearchInput.addEventListener('input', (e) => {
+        liveSearchInput.value = e.target.value;
+        filterServices();
+        document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    function filterServices() {
+      const query = liveSearchInput.value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.service-card');
+
+      cards.forEach(card => {
+        const title = card.getAttribute('data-title').toLowerCase();
+        const provider = card.getAttribute('data-provider').toLowerCase();
+        const category = card.getAttribute('data-category').toLowerCase();
+        const desc = card.querySelector('.service-desc').textContent.toLowerCase();
+
+        if (title.includes(query) || provider.includes(query) || category.includes(query) || desc.includes(query)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Category Filter Pills
+    function filterCategory(categoryKey, clickedBtn) {
+      if (clickedBtn) {
+        document.querySelectorAll('.filter-pills .filter-pill').forEach(btn => btn.classList.remove('active'));
+        clickedBtn.classList.add('active');
+      }
+
+      const cards = document.querySelectorAll('.service-card');
+      cards.forEach(card => {
+        const cardCat = card.getAttribute('data-category');
+        if (categoryKey === 'all' || cardCat === categoryKey) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function filterCategoryFromCard(catKey) {
+      // Find corresponding button
+      const buttons = document.querySelectorAll('.filter-pills .filter-pill');
+      buttons.forEach(btn => {
+        if (catKey === 'all' && btn.textContent.includes('All')) btn.click();
+        else if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(catKey)) btn.click();
+      });
+
+      document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Modal Handling
+    const modal = document.getElementById('bookingModal');
+
+    function openBookingModal(title, provider, price, delivery, icon) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalProvider').textContent = provider;
+      document.getElementById('modalPrice').textContent = price;
+      document.getElementById('modalDelivery').textContent = delivery;
+      document.getElementById('modalIcon').textContent = icon;
+      modal.style.display = 'flex';
+    }
+
+    function openModal(title, message) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalProvider').textContent = "SkillConnect System";
+      document.getElementById('modalPrice').textContent = "Free";
+      document.getElementById('modalDelivery').textContent = "Instant";
+      document.getElementById('modalIcon').textContent = "⚡";
+      document.getElementById('modalRequirementText').value = message;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    // Close on outside click
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    function confirmBooking() {
+      closeModal();
+      showToast("Order request simulated! In the full Django server, this triggers a real notification to the student.");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastAlert');
+      document.getElementById('toastMsg').textContent = message;
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

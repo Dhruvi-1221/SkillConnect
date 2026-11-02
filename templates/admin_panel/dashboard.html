@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}SkillConnect Admin Console{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <!-- Admin Navigation Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span class="badge" style="background: #1e1b4b; color: #a5b4fc; font-size: 0.8rem; padding: 0.25rem 0.6rem;">ADMIN CONSOLE</span>
+        <h1 style="font-size: 2rem; font-weight: 800;">Platform Dashboard</h1>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Monitor system health, student verifications, and content moderation</p>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <a href="{% url 'admin_verifications' %}" class="btn btn-primary btn-sm">🎓 Pending Verifications ({{ pending_verifications }})</a>
+      <a href="{% url 'admin_reports' %}" class="btn btn-danger btn-sm">🚩 Pending Reports ({{ pending_reports }})</a>
+      <a href="/django-admin/" class="btn btn-secondary btn-sm" target="_blank">Django Admin &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Admin Nav Tabs -->
+  <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem; overflow-x: auto;">
+    <a href="{% url 'admin_dashboard' %}" class="tab-link active">📊 Overview</a>
+    <a href="{% url 'admin_users' %}" class="tab-link">👥 Users</a>
+    <a href="{% url 'admin_verifications' %}" class="tab-link">🎓 Verifications {% if pending_verifications %}<span class="badge badge-pending">{{ pending_verifications }}</span>{% endif %}</a>
+    <a href="{% url 'admin_reports' %}" class="tab-link">🚩 Moderation {% if pending_reports %}<span class="badge badge-rejected">{{ pending_reports }}</span>{% endif %}</a>
+    <a href="{% url 'admin_categories' %}" class="tab-link">🏷️ Categories & Skills</a>
+    <a href="{% url 'admin_orders' %}" class="tab-link">📦 Orders Overview</a>
+  </div>
+
+  <!-- Real-time Statistics KPI Grid -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon blue">👥</div>
+      <div>
+        <div class="kpi-val">{{ total_users }}</div>
+        <div class="kpi-title">Total Users</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">{{ total_students }} students &bull; {{ total_customers }} customers</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon green">🎓</div>
+      <div>
+        <div class="kpi-val">{{ verified_students }}</div>
+        <div class="kpi-title">Verified Students</div>
+        <div style="font-size: 0.72rem; color: var(--warning); margin-top: 2px;">{{ pending_verifications }} pending review</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon indigo">📸</div>
+      <div>
+        <div class="kpi-val">{{ total_posts }}</div>
+        <div class="kpi-title">Portfolio Posts</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">{{ total_services }} service listings</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon amber">📦</div>
+      <div>
+        <div class="kpi-val">{{ total_orders }}</div>
+        <div class="kpi-title">Total Orders</div>
+        <div style="font-size: 0.72rem; color: var(--success); margin-top: 2px;">{{ completed_orders }} completed</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon red">🚩</div>
+      <div>
+        <div class="kpi-val">{{ pending_reports }}</div>
+        <div class="kpi-title">Pending Reports</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Requires moderation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Split: Pending Verifications & Pending Reports -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem;">
+    <!-- Pending Verifications -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Student Verifications Waiting</h3>
+        <a href="{% url 'admin_verifications' %}" class="btn btn-outline btn-sm">Manage All</a>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        {% if recent_verifications %}
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>College</th>
+                  <th>ID Card</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sp in recent_verifications %}
+                  <tr>
+                    <td>
+                      <strong>{{ sp.user.get_display_name }}</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted);">{{ sp.course }}</div>
+                    </td>
+                    <td>{{ sp.college_name|truncatechars:22 }}</td>
+                    <td>
+                      {% if sp.college_id_card %}
+                        <a href="{{ sp.college_id_card.url }}" target="_blank" class="badge badge-tag" style="color: var(--primary);">View ID</a>
+                      {% else %}
+                        <span style="font-size: 0.75rem; color: var(--text-light);">No image</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{% url 'admin_verifications' %}" class="btn btn-primary btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.78rem;">Review</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            No pending verifications waiting right now.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Latest Reports -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Latest Content Reports</h3>
+        <a href="{% url 'admin_reports' %}" class="btn btn-outline btn-sm">View Moderation</a>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        {% if recent_reports %}
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Target</th>
+                  <th>Reason</th>
+                  <th>Reporter</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rep in recent_reports %}
+                  <tr>
+                    <td><span class="badge badge-tag">{{ rep.get_target_type_display }} #{{ rep.target_id }}</span></td>
+                    <td><strong>{{ rep.get_reason_display }}</strong></td>
+                    <td>{{ rep.reported_by.username }}</td>
+                    <td>
+                      <a href="{% url 'admin_reports' %}" class="btn btn-danger btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.78rem;">Take Action</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            No open moderation reports. Platform content is clean!
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Platform Orders -->
+  <div class="card">
+    <div class="card-header">
+      <h3 style="font-size: 1.1rem; font-weight: 700;">Recent Platform Transactions & Orders</h3>
+      <a href="{% url 'admin_orders' %}" class="btn btn-outline btn-sm">All Orders</a>
+    </div>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Student Provider</th>
+            <th>Service</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ord in recent_orders %}
+            <tr>
+              <td><strong>#{{ ord.order_number }}</strong></td>
+              <td>{{ ord.customer.get_display_name }}</td>
+              <td>{{ ord.student.get_display_name }}</td>
+              <td>{{ ord.service.title|default:"Custom Service" }}</td>
+              <td><strong>₹{{ ord.price }}</strong></td>
+              <td>
+                <span class="badge {% if ord.status == 'COMPLETED' %}badge-verified{% elif ord.status == 'REQUESTED' %}badge-pending{% else %}badge-category{% endif %}">
+                  {{ ord.get_status_display }}
+                </span>
+              </td>
+              <td>{{ ord.created_at|date:"M d, Y" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No orders placed yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .tab-link {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 3px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .tab-link:hover { color: var(--primary); }
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+</style>
+{% endblock %}

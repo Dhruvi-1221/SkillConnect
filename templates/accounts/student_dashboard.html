@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <!-- Header & Verification Banner -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Student Provider Dashboard</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">
+        Welcome back, {{ user.first_name }} &bull; {{ student_profile.college_name }}
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'create_post' %}" class="btn btn-secondary">➕ New Post</a>
+      <a href="{% url 'create_service' %}" class="btn btn-primary">💼 Add Service</a>
+    </div>
+  </div>
+
+  <!-- Verification Alert if not verified -->
+  {% if not student_profile.is_verified %}
+    <div class="alert alert-warning" style="margin-bottom: 2rem;">
+      <div>
+        <strong>College Verification Status: {{ student_profile.get_verification_status_display }}</strong>
+        <p style="font-size: 0.85rem; margin-top: 0.2rem;">
+          Complete your college identity submission to earn the Verified Student checkmark and receive more bookings.
+        </p>
+      </div>
+      <a href="{% url 'verification' %}" class="btn btn-secondary btn-sm">Submit Documents</a>
+    </div>
+  {% endif %}
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon indigo">📦</div>
+      <div>
+        <div class="kpi-val">{{ active_orders_count }}</div>
+        <div class="kpi-title">Active Orders</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon green">✅</div>
+      <div>
+        <div class="kpi-val">{{ completed_orders_count }}</div>
+        <div class="kpi-title">Completed Orders</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon amber">₹</div>
+      <div>
+        <div class="kpi-val">₹{{ total_earnings }}</div>
+        <div class="kpi-title">Total Earnings</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon blue">👥</div>
+      <div>
+        <div class="kpi-val">{{ followers_count }}</div>
+        <div class="kpi-title">Campus Followers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Orders Table -->
+  <div class="card" style="margin-bottom: 2.5rem;">
+    <div class="card-header">
+      <h3 style="font-size: 1.15rem; font-weight: 700;">Recent Incoming Orders</h3>
+      <a href="{% url 'order_list' %}?tab=student" class="btn btn-outline btn-sm">View All Orders</a>
+    </div>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Service</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ord in incoming_orders %}
+            <tr>
+              <td><strong>#{{ ord.order_number }}</strong></td>
+              <td>{{ ord.customer.get_display_name }}</td>
+              <td>{{ ord.service.title|default:"Custom Service" }}</td>
+              <td><strong>₹{{ ord.price }}</strong></td>
+              <td>
+                <span class="badge {% if ord.status == 'COMPLETED' %}badge-verified{% elif ord.status == 'REQUESTED' %}badge-pending{% elif ord.status == 'REJECTED' %}badge-rejected{% else %}badge-category{% endif %}">
+                  {{ ord.get_status_display }}
+                </span>
+              </td>
+              <td>{{ ord.created_at|date:"M d, Y" }}</td>
+              <td>
+                <a href="{% url 'order_detail' ord.id %}" class="btn btn-secondary btn-sm">View & Update</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                No orders received yet. Keep showcasing your work through posts!
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Grid: Posts & Services -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Manage Posts Widget -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="font-size: 1.05rem; font-weight: 700;">Your Posts ({{ posts_count }})</h3>
+        <a href="{% url 'manage_posts' %}" class="btn btn-outline btn-sm">Manage All</a>
+      </div>
+      <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+          {% for p in posts %}
+            <a href="{% url 'post_detail' p.id %}" style="border-radius: var(--radius-sm); overflow: hidden; height: 90px; display: block;">
+              <img src="{{ p.image.url }}" alt="Post" style="width: 100%; height: 100%; object-fit: cover;">
+            </a>
+          {% empty %}
+            <p style="grid-column: 1/-1; color: var(--text-muted); font-size: 0.88rem;">No portfolio posts yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Services Widget -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="font-size: 1.05rem; font-weight: 700;">Your Services ({{ services_count }})</h3>
+        <a href="{% url 'manage_services' %}" class="btn btn-outline btn-sm">Manage All</a>
+      </div>
+      <div class="card-body">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for s in services|slice:":3" %}
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+              <div>
+                <a href="{% url 'service_detail' s.id %}" style="font-weight: 600; font-size: 0.9rem;">{{ s.title }}</a>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">₹{{ s.price }} &bull; {{ s.delivery_time_days }} days</div>
+              </div>
+              <a href="{% url 'edit_service' s.id %}" class="btn btn-secondary btn-sm">Edit</a>
+            </div>
+          {% empty %}
+            <p style="color: var(--text-muted); font-size: 0.88rem;">No services listed yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

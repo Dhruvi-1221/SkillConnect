@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Notifications</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Stay updated on orders, messages, likes, and followers</p>
+    </div>
+
+    {% if unread_notifications_count > 0 %}
+      <a href="{% url 'mark_all_notifications_read' %}" class="btn btn-secondary btn-sm">
+        ✓ Mark All as Read
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="card" style="overflow: hidden;">
+    <div style="display: flex; flex-direction: column;">
+      {% for n in notifications %}
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; padding: 1.25rem; border-bottom: 1px solid var(--border); background: {% if not n.is_read %}var(--primary-light){% else %}#fff{% endif %}; transition: var(--transition);">
+          <div style="display: flex; gap: 1rem; align-items: flex-start;">
+            <div style="font-size: 1.5rem; line-height: 1;">
+              {% if n.notification_type == 'ORDER_REQUEST' %}📦
+              {% elif n.notification_type == 'ORDER_ACCEPTED' or n.notification_type == 'ORDER_STATUS' %}⚡
+              {% elif n.notification_type == 'MESSAGE' %}💬
+              {% elif n.notification_type == 'LIKE' %}❤️
+              {% elif n.notification_type == 'COMMENT' %}✍️
+              {% elif n.notification_type == 'FOLLOW' %}👥
+              {% elif n.notification_type == 'VERIFICATION' %}🎓
+              {% elif n.notification_type == 'REVIEW' %}⭐
+              {% else %}🔔{% endif %}
+            </div>
+
+            <div>
+              <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; color: var(--text-main);">
+                {{ n.title }}
+                {% if not n.is_read %}
+                  <span class="badge" style="background: var(--primary); color: #fff; font-size: 0.65rem; padding: 0.1rem 0.4rem; margin-left: 0.35rem;">NEW</span>
+                {% endif %}
+              </div>
+              <p style="font-size: 0.88rem; color: #334155; margin-bottom: 0.4rem;">{{ n.message }}</p>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">
+                {{ n.created_at|timesince }} ago
+              </div>
+            </div>
+          </div>
+
+          <div>
+            {% if n.link %}
+              <a href="{% url 'read_notification' n.id %}" class="btn btn-primary btn-sm">
+                View &rarr;
+              </a>
+            {% else %}
+              <a href="{% url 'read_notification' n.id %}" class="btn btn-secondary btn-sm">
+                Mark Read
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🔔</div>
+          <h3 class="empty-state-title">You're all caught up!</h3>
+          <p class="empty-state-text">No notifications at the moment. Interactions on your posts and orders will show up here.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

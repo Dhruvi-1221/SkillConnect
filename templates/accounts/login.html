@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 480px;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <div class="brand-icon" style="margin: 0 auto 1rem; width: 44px; height: 44px; font-size: 1.3rem;">⚡</div>
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Welcome Back</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Log in to access your feed, orders, and services</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-error">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_username">Username or Email</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="form-error">{{ form.username.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_password">Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <div class="form-error">{{ form.password.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+        Log In
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+      Don't have an account? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 600;">Sign Up</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

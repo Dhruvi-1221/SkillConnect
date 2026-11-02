@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Services - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Manage Your Services</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Configure your offerings, rates, and active availability</p>
+    </div>
+    <a href="{% url 'create_service' %}" class="btn btn-primary">➕ Add New Service</a>
+  </div>
+
+  <div class="table-responsive card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Service Title</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Delivery Days</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in services %}
+          <tr>
+            <td>
+              <a href="{% url 'service_detail' s.id %}" style="font-weight: 700; color: var(--text-main);">
+                {{ s.title }}
+              </a>
+            </td>
+            <td>
+              {% if s.category %}<span class="badge badge-category">{{ s.category.name }}</span>{% else %}-{% endif %}
+            </td>
+            <td><strong>₹{{ s.price }}</strong></td>
+            <td>⏱ {{ s.delivery_time_days }} days</td>
+            <td>
+              {% if s.is_active %}
+                <span class="badge badge-verified">Active</span>
+              {% else %}
+                <span class="badge badge-rejected">Inactive</span>
+              {% endif %}
+            </td>
+            <td>{{ s.created_at|date:"M d, Y" }}</td>
+            <td>
+              <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'service_detail' s.id %}" class="btn btn-outline btn-sm">View</a>
+                <a href="{% url 'edit_service' s.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                <a href="{% url 'delete_service' s.id %}" class="btn btn-danger btn-sm">Delete</a>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              You have not created any services yet. Start offering your skill to campus customers!
+              <div style="margin-top: 1rem;">
+                <a href="{% url 'create_service' %}" class="btn btn-primary">Create Your First Service</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

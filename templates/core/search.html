@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Skills, Students & Services - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 3rem;">
+  <!-- Search Header Form -->
+  <div class="card" style="padding: 1.5rem; margin-bottom: 2rem;">
+    <form action="{% url 'search' %}" method="GET" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 250px;">
+        <input type="text" name="q" class="form-input" placeholder="Search by student name, college, skill (e.g. Photography, Logo, React)..." value="{{ query }}">
+      </div>
+      <div style="width: 200px;">
+        <select name="category" class="form-select">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if category_slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Search 🔍</button>
+    </form>
+
+    <!-- Quick Category Badges -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; align-items: center;">
+      <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Popular Filters:</span>
+      {% for cat in categories|slice:":8" %}
+        <a href="{% url 'search' %}?category={{ cat.slug }}" class="badge {% if category_slug == cat.slug %}badge-category{% else %}badge-tag{% endif %}">
+          {{ cat.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Search Results Count -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div>
+      <h2 style="font-size: 1.35rem; font-weight: 700;">
+        {% if query or selected_category %}
+          Search Results {% if query %}for "{{ query }}"{% endif %} {% if selected_category %}({{ selected_category.name }}){% endif %}
+        {% else %}
+          Explore Talent & Services
+        {% endif %}
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">{{ total_results }} items found</p>
+    </div>
+  </div>
+
+  <!-- Tab 1: Students Section -->
+  {% if students %}
+    <div style="margin-bottom: 2.5rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>🎓</span> Student Providers ({{ students|length }})
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;">
+        {% for st in students %}
+          <div class="card" style="padding: 1.25rem;">
+            <div style="display: flex; gap: 0.85rem; align-items: center; margin-bottom: 0.75rem;">
+              <a href="{% url 'profile' st.user.username %}">
+                <img src="{{ st.user.profile.get_avatar_url }}" alt="{{ st.user.username }}" class="avatar avatar-md">
+              </a>
+              <div>
+                <a href="{% url 'profile' st.user.username %}" style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
+                  {{ st.user.get_display_name }}
+                </a>
+                {% if st.is_verified %}
+                  <span class="badge badge-verified" style="display: inline-block;">✓ Verified</span>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ st.college_name }}</div>
+              </div>
+            </div>
+
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              {{ st.course }} &bull; {{ st.year_of_study }}
+            </p>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;">
+              {% for skill in st.skills.all|slice:":3" %}
+                <span class="badge badge-tag">{{ skill.name }}</span>
+              {% endfor %}
+            </div>
+
+            <a href="{% url 'profile' st.user.username %}" class="btn btn-outline btn-sm btn-block">
+              View Profile & Portfolio
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Tab 2: Services Section -->
+  {% if services %}
+    <div style="margin-bottom: 2.5rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>💼</span> Available Services ({{ services|length }})
+      </h3>
+      <div class="service-grid">
+        {% for s in services %}
+          <div class="service-card">
+            {% if s.image %}
+              <img src="{{ s.image.url }}" alt="{{ s.title }}" class="service-thumbnail">
+            {% else %}
+              <div class="service-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: var(--primary-light); color: var(--primary);">
+                💼
+              </div>
+            {% endif %}
+            <div class="service-content">
+              {% if s.category %}
+                <span class="badge badge-category" style="align-self: flex-start; margin-bottom: 0.5rem;">{{ s.category.name }}</span>
+              {% endif %}
+              <h4 class="service-title">
+                <a href="{% url 'service_detail' s.id %}">{{ s.title }}</a>
+              </h4>
+              <p class="service-desc">{{ s.description|truncatewords:15 }}</p>
+
+              <div class="service-footer">
+                <div class="service-price">₹{{ s.price }}</div>
+                <a href="{% url 'service_detail' s.id %}" class="btn btn-primary btn-sm">Order / View</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Tab 3: Posts Section -->
+  {% if posts %}
+    <div style="margin-bottom: 2.5rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>🖼</span> Portfolio Posts ({{ posts|length }})
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem;">
+        {% for p in posts %}
+          <div class="card" style="overflow: hidden;">
+            <a href="{% url 'post_detail' p.id %}">
+              <img src="{{ p.image.url }}" alt="{{ p.caption|truncatewords:4 }}" style="height: 180px; width: 100%; object-fit: cover;">
+            </a>
+            <div style="padding: 1rem;">
+              <div style="font-weight: 600; font-size: 0.88rem; margin-bottom: 0.25rem;">
+                <a href="{% url 'profile' p.student.username %}">{{ p.student.get_display_name }}</a>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                {{ p.caption|truncatewords:12 }}
+              </p>
+              <a href="{% url 'post_detail' p.id %}" style="font-size: 0.82rem; color: var(--primary); font-weight: 600;">View Details &rarr;</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Empty state -->
+  {% if not students and not services and not posts %}
+    <div class="empty-state">
+      <div class="empty-state-icon">🔍</div>
+      <h3 class="empty-state-title">No matching results found</h3>
+      <p class="empty-state-text">
+        Try searching with different keywords like "Photography", "Design", "Mehndi", or choose one of the categories above.
+      </p>
+      <a href="{% url 'service_list' %}" class="btn btn-primary">Browse All Services</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

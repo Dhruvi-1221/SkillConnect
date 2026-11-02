@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Interests - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3rem; padding-bottom: 5rem;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <div class="brand-icon" style="margin: 0 auto 1rem; width: 44px; height: 44px; font-size: 1.3rem;">🎯</div>
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Personalize Your Feed</h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem;">
+      Select the skill categories you are interested in hiring, following, or discovering on campus.
+    </p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        {% for cat in categories %}
+          <label class="interest-card {% if cat.id in user_interest_ids %}selected{% endif %}" id="cat-label-{{ cat.id }}">
+            <input type="checkbox" name="interests" value="{{ cat.id }}" {% if cat.id in user_interest_ids %}checked{% endif %} style="display: none;" onchange="toggleInterestCard(this, 'cat-label-{{ cat.id }}')">
+            <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">
+              {% if cat.slug == 'photography' %}📷
+              {% elif cat.slug == 'graphic-design' %}🎨
+              {% elif cat.slug == 'web-development' %}💻
+              {% elif cat.slug == 'mehndi' %}✨
+              {% elif cat.slug == 'makeup' %}💄
+              {% elif cat.slug == 'tutoring' %}📚
+              {% elif cat.slug == 'video-editing' %}🎬
+              {% elif cat.slug == 'baking' %}🧁
+              {% elif cat.slug == 'art' %}🖌️
+              {% elif cat.slug == 'music' %}🎵
+              {% elif cat.slug == 'dance' %}💃
+              {% elif cat.slug == 'handmade-products' %}🧶
+              {% else %}⚡{% endif %}
+            </div>
+            <div style="font-weight: 700; font-size: 0.95rem;">{{ cat.name }}</div>
+          </label>
+        {% endfor %}
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Save Interests & Go to Feed 🚀</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .interest-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .interest-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+  .interest-card.selected {
+    border-color: var(--primary);
+    background-color: var(--primary-light);
+    color: var(--primary);
+  }
+</style>
+<script>
+  function toggleInterestCard(checkbox, labelId) {
+    const label = document.getElementById(labelId);
+    if (checkbox.checked) {
+      label.classList.add('selected');
+    } else {
+      label.classList.remove('selected');
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Categories & Skills - SkillConnect Admin{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Category & Skill Management</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Add new skill fields, categories, and tags available to students</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+
+    <!-- Left: Add Category & Add Skill Forms -->
+    <div>
+      <!-- Add Category Form -->
+      <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">Add New Category</h3>
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="ADD_CATEGORY">
+
+          <div class="form-group">
+            <label class="form-label" for="name">Category Name *</label>
+            <input type="text" id="name" name="name" class="form-input" required placeholder="e.g. 3D Modeling, Cooking">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="icon">Icon Identifier</label>
+            <input type="text" id="icon" name="icon" class="form-input" placeholder="e.g. palette, camera, code, book" value="palette">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="description">Description</label>
+            <textarea id="description" name="description" class="form-textarea" rows="2" placeholder="Brief overview of this skill area..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Create Category</button>
+        </form>
+      </div>
+
+      <!-- Add Skill Form -->
+      <div class="card" style="padding: 1.5rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">Add Skill to Category</h3>
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="ADD_SKILL">
+
+          <div class="form-group">
+            <label class="form-label" for="category_id">Parent Category *</label>
+            <select id="category_id" name="category_id" class="form-select" required>
+              <option value="">Select Category</option>
+              {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="skill_name">Skill Name *</label>
+            <input type="text" id="skill_name" name="skill_name" class="form-input" required placeholder="e.g. Figma UI Design, Adobe Premiere, Python">
+          </div>
+
+          <button type="submit" class="btn btn-secondary btn-block">Add Skill</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right: Current Categories & Skills List -->
+    <div class="card" style="padding: 1.5rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">
+        Existing Categories & Skills ({{ categories|length }})
+      </h3>
+
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        {% for cat in categories %}
+          <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; background: var(--bg);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.25rem;">
+                  {% if cat.slug == 'photography' %}📷
+                  {% elif cat.slug == 'graphic-design' %}🎨
+                  {% elif cat.slug == 'web-development' %}💻
+                  {% elif cat.slug == 'mehndi' %}✨
+                  {% elif cat.slug == 'makeup' %}💄
+                  {% elif cat.slug == 'tutoring' %}📚
+                  {% elif cat.slug == 'video-editing' %}🎬
+                  {% elif cat.slug == 'baking' %}🧁
+                  {% elif cat.slug == 'art' %}🖌️
+                  {% elif cat.slug == 'music' %}🎵
+                  {% elif cat.slug == 'dance' %}💃
+                  {% elif cat.slug == 'handmade-products' %}🧶
+                  {% else %}⚡{% endif %}
+                </span>
+                <strong style="font-size: 1.05rem;">{{ cat.name }}</strong>
+                <span class="badge badge-tag">{{ cat.skills.count }} skills</span>
+              </div>
+            </div>
+
+            {% if cat.description %}
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">{{ cat.description }}</p>
+            {% endif %}
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+              {% for s in cat.skills.all %}
+                <span class="badge" style="background: #fff; border: 1px solid var(--border); color: var(--text-main); font-size: 0.78rem;">
+                  {{ s.name }}
+                </span>
+              {% empty %}
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">No specific skills added yet.</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted);">No categories created yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Share Portfolio Work - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3rem; padding-bottom: 5rem;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Showcase Your Skill</h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">Upload a photo of your design, event photography, artwork, or coding project</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_image">Work / Portfolio Image *</label>
+        {{ form.image }}
+        <span class="form-help">Supported formats: JPG, PNG, WEBP. Max resolution up to 4K.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_category">Category *</label>
+        {{ form.category }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_caption">Caption & Description</label>
+        {{ form.caption }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_skill_tags">Skill Tags</label>
+        {{ form.skill_tags }}
+        <span class="form-help">e.g. Portrait, Lightroom, Festive, Adobe Illustrator</span>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Publish Post 🚀</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

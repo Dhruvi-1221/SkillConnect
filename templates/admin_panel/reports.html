@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Content Moderation & Reports - SkillConnect Admin{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Content Moderation & Reports</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Investigate reported users, inappropriate posts, spam comments, and services</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+  </div>
+
+  <!-- Filter tabs -->
+  <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem;">
+    <a href="{% url 'admin_reports' %}?status=PENDING" class="tab-link {% if status_filter == 'PENDING' %}active{% endif %}">
+      ⏳ Open / Pending
+    </a>
+    <a href="{% url 'admin_reports' %}?status=RESOLVED" class="tab-link {% if status_filter == 'RESOLVED' %}active{% endif %}">
+      ✓ Resolved (Action Taken)
+    </a>
+    <a href="{% url 'admin_reports' %}?status=DISMISSED" class="tab-link {% if status_filter == 'DISMISSED' %}active{% endif %}">
+      ✕ Dismissed
+    </a>
+    <a href="{% url 'admin_reports' %}?status=ALL" class="tab-link {% if status_filter == 'ALL' %}active{% endif %}">
+      All Reports
+    </a>
+  </div>
+
+  <!-- Reports Table -->
+  <div class="card table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Report ID</th>
+          <th>Target</th>
+          <th>Violation Reason</th>
+          <th>Details Submitted</th>
+          <th>Reporter</th>
+          <th>Status</th>
+          <th>Admin Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+          <tr>
+            <td><strong>#{{ r.id }}</strong></td>
+            <td>
+              <span class="badge badge-tag">{{ r.get_target_type_display }}</span>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">ID: #{{ r.target_id }}</div>
+            </td>
+            <td>
+              <strong style="color: var(--danger);">{{ r.get_reason_display }}</strong>
+            </td>
+            <td style="max-width: 250px;">
+              <div style="font-size: 0.85rem; line-height: 1.4; color: #334155;">{{ r.details|default:"No extra details provided." }}</div>
+            </td>
+            <td>
+              <a href="{% url 'profile' r.reported_by.username %}" style="font-weight: 600;">{{ r.reported_by.username }}</a>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">{{ r.created_at|date:"M d, H:i" }}</div>
+            </td>
+            <td>
+              <span class="badge {% if r.status == 'RESOLVED' %}badge-verified{% elif r.status == 'DISMISSED' %}badge-tag{% else %}badge-rejected{% endif %}">
+                {{ r.get_status_display }}
+              </span>
+            </td>
+            <td>
+              {% if r.status == 'PENDING' or r.status == 'INVESTIGATING' %}
+                <form action="{% url 'admin_process_report' r.id %}" method="POST" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="DISMISS" class="btn btn-secondary btn-sm" title="Dismiss without action">
+                    Dismiss
+                  </button>
+                  <button type="submit" name="action" value="REMOVE_CONTENT" class="btn btn-danger btn-sm" onclick="return confirm('Delete this content from database?')">
+                    Delete Content
+                  </button>
+                  <button type="submit" name="action" value="SUSPEND_USER" class="btn btn-danger btn-sm" style="background: #991b1b;" onclick="return confirm('Suspend the offending user account?')">
+                    Suspend User
+                  </button>
+                </form>
+              {% else %}
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Resolved by {{ r.resolved_by.username|default:"Admin" }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              No reports found in this view.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .tab-link {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 3px solid transparent;
+  }
+  .tab-link:hover { color: var(--primary); }
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+</style>
+{% endblock %}

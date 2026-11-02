@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillConnect - Master Project Documentation</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --secondary: #06b6d4;
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+    --bg-light: #f8fafc;
+    --border: #e2e8f0;
+    --code-bg: #0f172a;
+    --success: #10b981;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    line-height: 1.65;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 60px 80px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .header-badge {
+    display: inline-block;
+    background: #e0e7ff;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 34px;
+    color: #0f172a;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .subtitle {
+    font-size: 18px;
+    color: var(--text-light);
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid var(--border);
+  }
+  h2 {
+    font-size: 24px;
+    color: #1e293b;
+    margin-top: 45px;
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+  }
+  h3 {
+    font-size: 18px;
+    color: var(--primary-dark);
+    margin-top: 25px;
+    margin-bottom: 10px;
+  }
+  h4 {
+    font-size: 15px;
+    color: #334155;
+    margin-top: 15px;
+    margin-bottom: 6px;
+  }
+  p, li {
+    font-size: 15px;
+    color: #334155;
+    margin-bottom: 12px;
+  }
+  ul, ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+  pre {
+    background: var(--code-bg);
+    color: #f1f5f9;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-family: Consolas, "Courier New", monospace;
+    overflow-x: auto;
+    margin: 16px 0;
+    line-height: 1.5;
+  }
+  code {
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13.5px;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  th {
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background: #fdfdfd;
+  }
+  .callout {
+    background: #eff6ff;
+    border-left: 4px solid var(--primary);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+  }
+  .badge-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-verified { background: #dcfce7; color: #15803d; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .print-btn {
+    float: right;
+    background: var(--primary);
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .print-btn:hover {
+    background: var(--primary-dark);
+  }
+  @media print {
+    body { background: white; padding: 0; }
+    .container { box-shadow: none; border: none; padding: 20px; }
+    .print-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  <span class="header-badge">Software Engineering Project Documentation</span>
+  <h1>SkillConnect</h1>
+  <div class="subtitle">Full-Stack Student Talent Marketplace & Portfolio Social Platform</div>
+
+  <div class="callout">
+    <strong>Project Overview:</strong> SkillConnect is a production-grade full-stack web application built using Python 3.13, Django 5.2, MySQL 8.0, HTML5, CSS3, and Vanilla JavaScript. It connects verified student freelancers with campus and local clients with milestone tracking, direct chat, and community reviews.
+  </div>
+
+  <h2>1. Technology Stack</h2>
+  <table>
+    <tr><th>Component</th><th>Technology</th><th>Implementation Detail</th></tr>
+    <tr><td>Backend Framework</td><td>Python Django 5.2</td><td>Model-View-Template (MVT) Pattern</td></tr>
+    <tr><td>Database</td><td>MySQL 8.0 Server</td><td>InnoDB Engine, Relational Foreign Keys, PyMySQL Driver</td></tr>
+    <tr><td>Frontend Design</td><td>Semantic HTML5 + Modern CSS3</td><td>Custom Design System, Flexbox, Grid, CSS Variables</td></tr>
+    <tr><td>Interactivity</td><td>Vanilla JavaScript (ES6+)</td><td>Native AJAX Fetch API (Zero React, Zero Node.js)</td></tr>
+    <tr><td>Authentication</td><td>Django Auth System</td><td>PBKDF2-SHA256 Password Hashing, Role-Based Access</td></tr>
+    <tr><td>File Storage</td><td>Django Media System</td><td>ImageField with Pillow 12.3.0 Validation</td></tr>
+  </table>
+
+  <h2>2. System Architecture (Django MVT)</h2>
+  <pre>
+[User Browser (Client)] 
+       │ 
+       ▼ HTTP Request
+[urls.py (URL Routing)] 
+       │ 
+       ▼ Passes to View
+[views.py (Controller / Business Logic)] 
+       │                   │
+       ▼ Queries/Updates   ▼ Passes Data
+[models.py (Data)]     [templates/*.html (Presentation)]
+       │
+       ▼ (PyMySQL ORM)
+[MySQL Database: skillconnect_db]
+  </pre>
+
+  <h2>3. Complete File-by-File Guide</h2>
+  <h3>Project Configuration</h3>
+  <ul>
+    <li><code>manage.py</code>: Django command-line management utility for running the server, migrations, and tests.</li>
+    <li><code>skillconnect/__init__.py</code>: Initializes PyMySQL as the MySQLdb driver so Python 3.13 communicates smoothly with MySQL on Windows.</li>
+    <li><code>skillconnect/settings.py</code>: Project settings including database configuration, custom user model, and static/media directories.</li>
+    <li><code>skillconnect/urls.py</code>: Master URL router combining all 10 application routes.</li>
+    <li><code>populate_db.py</code>: Automated seeder script populating 12 categories, 8 users, student profiles, posts, services, and orders.</li>
+  </ul>
+
+  <h3>Application Modules</h3>
+  <ul>
+    <li><strong><code>accounts/</code></strong>: Custom User model with roles (<code>CUSTOMER</code>, <code>STUDENT</code>, <code>ADMIN</code>), <code>StudentProfile</code> with college ID upload, and social following.</li>
+    <li><strong><code>posts/</code></strong>: Visual portfolio posts, likes (AJAX), and comments.</li>
+    <li><strong><code>services/</code></strong>: Freelance service packages, turnaround times, and pricing in INR (₹).</li>
+    <li><strong><code>orders/</code></strong>: 5-stage milestone order tracker (<code>REQUESTED</code> → <code>ACCEPTED</code> → <code>IN_PROGRESS</code> → <code>READY_FOR_REVIEW</code> → <code>COMPLETED</code>) with audit history.</li>
+    <li><strong><code>chat/</code></strong>: 1-to-1 direct messaging system with 3-second live AJAX polling.</li>
+    <li><strong><code>reviews/</code></strong>: Verified client 5-star ratings and written feedback for completed orders.</li>
+    <li><strong><code>reports/</code></strong>: Content flagging and user moderation system.</li>
+    <li><strong><code>notifications/</code></strong>: Real-time user alert notifications for orders, messages, and approvals.</li>
+    <li><strong><code>admin_panel/</code></strong>: Custom dashboard for campus admins to review student ID cards and moderate the platform.</li>
+    <li><strong><code>core/</code></strong>: Homepage landing view, multi-model global search, and automated test suite.</li>
+  </ul>
+
+  <h2>4. Syntax & Code Deep Dive</h2>
+  <h3>Django Decorators</h3>
+  <pre><code>@login_required
+def book_service_view(request, service_id):
+    # Automatically redirects unauthenticated users to the login page</code></pre>
+
+  <h3>Django Model Form Commit Control</h3>
+  <pre><code>order = form.save(commit=False) # Creates Python object in memory without MySQL insert
+order.customer = request.user   # Attaches logged-in user
+order.save()                    # Commits record to MySQL</code></pre>
+
+  <h3>Vanilla JS AJAX Like Button</h3>
+  <pre><code>const response = await fetch(`/posts/${postId}/like/`, {
+  method: 'POST',
+  headers: { 'X-CSRFToken': getCookie('csrftoken') }
+});
+const data = await response.json();
+countSpan.textContent = data.count; // Updates screen without refreshing page</code></pre>
+
+  <h2>5. Step-by-Step Functional Workflow</h2>
+  <ol>
+    <li><strong>Registration</strong>: User registers as a Student or Customer. Passwords hashed with PBKDF2-SHA256.</li>
+    <li><strong>Student Verification</strong>: Student enters college details and uploads an ID card. Admin reviews and approves it, awarding the <span class="badge-tag badge-verified">✓ Verified Student</span> badge.</li>
+    <li><strong>Portfolio & Services</strong>: Student publishes creative work and sets fixed-price services in INR (₹).</li>
+    <li><strong>Booking & Tracking</strong>: Customer requests a service. Both parties track progress through a visual 5-stage milestone stepper.</li>
+    <li><strong>Direct Chat</strong>: Customer and student chat in real-time with automatic 3-second polling.</li>
+    <li><strong>Reviews</strong>: Upon project completion, customer leaves a verified rating and review.</li>
+  </ol>
+
+  <h2>6. Key Viva / Exam Questions & Answers</h2>
+  <table>
+    <tr><th>Question</th><th>Examiner-Ready Answer</th></tr>
+    <tr><td><strong>Why MySQL over SQLite?</strong></td><td>MySQL is a production-grade relational database with true multi-user concurrency, transactional integrity (ACID), and robust foreign keys.</td></tr>
+    <tr><td><strong>How is CSRF prevented?</strong></td><td>Django generates a unique CSRF token per session. Every POST request and AJAX call must supply this token or be rejected.</td></tr>
+    <tr><td><strong>How does student verification work?</strong></td><td>Students upload an ID image. Admins review it via a dedicated admin portal. Approving updates the status to <code>VERIFIED</code> and triggers the verified badge.</td></tr>
+    <tr><td><strong>How does live chat function without WebSockets?</strong></td><td>It uses Vanilla JavaScript AJAX polling every 3 seconds, fetching only messages where <code>id > last_id</code>. This is reliable, lightweight, and requires no Node.js server.</td></tr>
+  </table>
+
+  <h2>7. Quick Start Commands</h2>
+  <pre>
+# Start Django Server (Windows PowerShell)
+.\.venv\Scripts\python manage.py runserver
+
+# Run Automated Test Suite
+.\.venv\Scripts\python manage.py test core
+  </pre>
+</div>
+</body>
+</html>

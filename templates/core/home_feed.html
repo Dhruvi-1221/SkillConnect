@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}Recommended Feed - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide">
+  <div class="feed-layout">
+
+    <!-- Left Sidebar: User & Quick Links -->
+    <aside class="sidebar-sticky">
+      {% if user.is_authenticated %}
+        <div class="side-nav-card" style="text-align: center; padding-top: 1.5rem;">
+          <img src="{{ user.profile.get_avatar_url }}" alt="{{ user.username }}" class="avatar avatar-lg" style="margin: 0 auto 0.75rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700;">{{ user.get_display_name }}</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            {{ user.get_role_display }}
+            {% if is_verified_student %}
+              <span class="badge badge-verified" style="display: inline-flex; margin-top: 4px;">✓ Verified Student</span>
+            {% endif %}
+          </p>
+          {% if user.is_student %}
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">
+              {{ user.student_profile.college_name }}
+            </p>
+            <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm btn-block">➕ New Post</a>
+          {% else %}
+            <a href="{% url 'interests_setup' %}" class="btn btn-outline btn-sm btn-block" style="margin-top: 0.5rem;">🎯 My Interests</a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="side-nav-card quick-links">
+        <a href="{% url 'home' %}" class="side-nav-link active">
+          <span>🏠</span> Recommended Feed
+        </a>
+        <a href="{% url 'service_list' %}" class="side-nav-link">
+          <span>💼</span> Browse Services
+        </a>
+        <a href="{% url 'order_list' %}" class="side-nav-link">
+          <span>📦</span> Orders & Tracking
+        </a>
+        <a href="{% url 'chat' %}" class="side-nav-link">
+          <span>💬</span> Messages
+        </a>
+        <a href="{% url 'interests_setup' %}" class="side-nav-link">
+          <span>🎯</span> Update Interests
+        </a>
+        {% if user.is_student %}
+          <a href="{% url 'student_dashboard' %}" class="side-nav-link">
+            <span>📊</span> Student Dashboard
+          </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <!-- Center Column: Recommended Feed Stream -->
+    <section>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <div>
+          <h2 style="font-size: 1.4rem; font-weight: 800;">Recommended For You</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Curated student portfolios matching your skills & interests</p>
+        </div>
+        {% if user.is_student %}
+          <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm">➕ Post Work</a>
+        {% endif %}
+      </div>
+
+      <!-- Feed Posts -->
+      {% for post in posts %}
+        <article class="post-card" id="post-{{ post.id }}">
+          <!-- Post Header -->
+          <div class="post-header">
+            <div class="post-author">
+              <a href="{% url 'profile' post.student.username %}">
+                <img src="{{ post.student.profile.get_avatar_url }}" alt="{{ post.student.username }}" class="avatar avatar-sm">
+              </a>
+              <div>
+                <div class="author-name-row">
+                  <a href="{% url 'profile' post.student.username %}" class="author-name">
+                    {{ post.student.get_display_name }}
+                  </a>
+                  {% if post.student.student_profile.is_verified %}
+                    <span class="badge badge-verified" title="Verified College Student">✓ Verified Student</span>
+                  {% endif %}
+                </div>
+                <div class="author-college">
+                  {{ post.student.student_profile.college_name|default:"College Student" }}
+                  {% if post.category %}
+                    &bull; <span class="badge badge-category" style="font-size: 0.7rem; padding: 0.1rem 0.4rem;">{{ post.category.name }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Follow / Report Dropdown -->
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              {% if user != post.student and user.is_authenticated %}
+                <button class="btn btn-outline btn-sm btn-follow-toggle" data-username="{{ post.student.username }}">
+                  Follow
+                </button>
+              {% endif %}
+              <a href="{% url 'submit_report' 'POST' post.id %}" title="Report Post" style="color: var(--text-light); font-size: 0.9rem; padding: 0.3rem;">
+                🚩
+              </a>
+            </div>
+          </div>
+
+          <!-- Post Media Image -->
+          <div class="post-media-wrap">
+            <a href="{% url 'post_detail' post.id %}" style="display: block; width: 100%;">
+              <img src="{{ post.image.url }}" alt="{{ post.caption|truncatewords:6 }}" class="post-media" loading="lazy">
+            </a>
+          </div>
+
+          <!-- Post Content & Interactions -->
+          <div class="post-body">
+            <div class="post-actions">
+              <div class="action-btn-group">
+                <!-- AJAX Like Button -->
+                <button class="action-btn btn-like {% if user.is_authenticated and post|yesno:'true,false' %}{% if user.is_authenticated and post.is_liked_by %}{% endif %}{% endif %}"
+                        data-post-id="{{ post.id }}"
+                        title="Like this post">
+                  <span class="like-icon" style="font-size: 1.25rem;">
+                    {% if user.is_authenticated and post.is_liked_by %}♥{% else %}♡{% endif %}
+                  </span>
+                  <span class="like-count" style="font-weight: 600;">{{ post.likes.count }}</span>
+                </button>
+
+                <!-- Comment Anchor -->
+                <a href="{% url 'post_detail' post.id %}" class="action-btn" title="View Comments">
+                  <span style="font-size: 1.1rem;">💬</span>
+                  <span id="comment-count-{{ post.id }}">{{ post.comments.count }}</span>
+                </a>
+
+                <!-- Share Button -->
+                <button class="action-btn btn-share" data-url="{{ request.scheme }}://{{ request.get_host }}{% url 'post_detail' post.id %}" title="Share Post">
+                  <span style="font-size: 1.1rem;">↗</span> Share
+                </button>
+              </div>
+
+              <div class="post-time">
+                {{ post.created_at|timesince }} ago
+              </div>
+            </div>
+
+            {% if post.caption %}
+              <p class="post-caption">
+                <strong>{{ post.student.username }}</strong> {{ post.caption }}
+              </p>
+            {% endif %}
+
+            {% if post.skill_tags %}
+              <div class="post-tags">
+                {% for tag in post.skill_tags.split %}
+                  <span class="badge badge-tag">#{{ tag|cut:"," }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Inline Comments Section -->
+          <div class="post-comments-wrap">
+            <div class="comments-list" id="comments-list-{{ post.id }}">
+              {% for comment in post.comments.all|slice:":3" %}
+                <div class="comment-item">
+                  <a href="{% url 'profile' comment.user.username %}" class="comment-user">{{ comment.user.username }}:</a>
+                  <span class="comment-text">{{ comment.content }}</span>
+                </div>
+              {% empty %}
+                <div style="font-size: 0.8rem; color: var(--text-light);">No comments yet. Be the first to cheer!</div>
+              {% endfor %}
+            </div>
+
+            {% if user.is_authenticated %}
+              <form class="comment-form ajax-comment-form" data-post-id="{{ post.id }}">
+                <input type="text" class="comment-input" placeholder="Add a comment..." required>
+                <button type="submit" class="btn btn-primary btn-sm" style="border-radius: var(--radius-full);">Post</button>
+              </form>
+            {% else %}
+              <p style="font-size: 0.8rem; color: var(--text-muted);">
+                <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 600;">Log in</a> to comment on this post.
+              </p>
+            {% endif %}
+          </div>
+        </article>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🎨</div>
+          <h3 class="empty-state-title">No posts available yet</h3>
+          <p class="empty-state-text">
+            Be the pioneer! Students can post their creative portfolio work, photography, designs, or tutoring highlights here.
+          </p>
+          {% if user.is_student %}
+            <a href="{% url 'create_post' %}" class="btn btn-primary">Create Your First Post</a>
+          {% else %}
+            <a href="{% url 'search' %}" class="btn btn-outline">Explore Campus Services</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </section>
+
+    <!-- Right Sidebar: Suggested Students & Categories -->
+    <aside class="sidebar-sticky sidebar-right">
+      <!-- Suggested Students Card -->
+      <div class="side-nav-card">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.9rem;">
+          Verified Students to Follow
+        </h4>
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+          {% for student in suggested_students %}
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <a href="{% url 'profile' student.user.username %}">
+                  <img src="{{ student.user.profile.get_avatar_url }}" alt="{{ student.user.username }}" class="avatar avatar-sm">
+                </a>
+                <div>
+                  <a href="{% url 'profile' student.user.username %}" style="font-weight: 600; font-size: 0.86rem; display: block; line-height: 1.2;">
+                    {{ student.user.get_display_name }}
+                  </a>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">{{ student.college_name|truncatechars:20 }}</span>
+                </div>
+              </div>
+              <a href="{% url 'profile' student.user.username %}" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.78rem;">
+                View
+              </a>
+            </div>
+          {% empty %}
+            <p style="font-size: 0.82rem; color: var(--text-muted);">No suggestions right now.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Categories Card -->
+      <div class="side-nav-card">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.9rem;">
+          Popular Categories
+        </h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+          {% for cat in categories %}
+            <a href="{% url 'search' %}?category={{ cat.slug }}" class="badge badge-tag" style="padding: 0.3rem 0.6rem; font-size: 0.78rem;">
+              {{ cat.name }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+{% endblock %}

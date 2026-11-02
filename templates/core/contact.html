@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact & Help - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3rem; padding-bottom: 4rem;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Help & Contact Support</h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">Have questions about student verification, order tracking, or services? We're here to help!</p>
+  </div>
+
+  <div class="form-card">
+    <form action="{% url 'contact' %}" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="name">Your Name</label>
+        <input type="text" id="name" name="name" class="form-input" required placeholder="e.g. Aarav Patel" value="{% if user.is_authenticated %}{{ user.get_display_name }}{% endif %}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" id="email" name="email" class="form-input" required placeholder="name@example.com" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" class="form-input" required placeholder="e.g. Question about student verification / order assistance">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="message">Your Message</label>
+        <textarea id="message" name="message" class="form-textarea" rows="5" required placeholder="Describe your question or issue in detail..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Send Message 📨</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

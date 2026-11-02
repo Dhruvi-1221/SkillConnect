@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}SkillConnect - Discover Skills. Connect with Students. Get Things Done.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag">
+      <span>🎓</span> The College Skill Marketplace
+    </div>
+    <h1 class="hero-title">
+      Discover Skills. Connect with Students. <span>Get Things Done.</span>
+    </h1>
+    <p class="hero-subtitle">
+      SkillConnect connects talented college students offering photography, graphic design, tutoring, coding, makeup, and creative services with customers and campus clubs looking for quality work at student-friendly prices.
+    </p>
+
+    <div class="hero-actions">
+      <a href="{% url 'search' %}" class="btn btn-primary btn-lg">Explore Skills & Services 🚀</a>
+      <a href="{% url 'register' %}?role=STUDENT" class="btn btn-secondary btn-lg">Offer Your Skills 🎨</a>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="hero-stats">
+      <div class="stat-item">
+        <h3>100%</h3>
+        <p>Verified College Students</p>
+      </div>
+      <div class="stat-item">
+        <h3>15+</h3>
+        <p>Creative & Tech Categories</p>
+      </div>
+      <div class="stat-item">
+        <h3>₹0</h3>
+        <p>Zero Platform Hidden Fees</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="section" style="background: #fff;">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">How SkillConnect Works</h2>
+      <p class="section-subtitle">A seamless experience for both campus creators and customers</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+      <div class="card" style="text-align: center; padding: 2rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔍</div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">1. Discover Talent</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">
+          Browse student portfolios, real project posts, and verified badges from campus designers, photographers, and coders.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 2rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">💬</div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">2. Chat & Book</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">
+          Communicate directly through our built-in real-time chat, specify your requirements, and book services transparently.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 2rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📦</div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">3. Track & Review</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">
+          Watch your order progress through our step-by-step visual tracker and leave genuine ratings upon completion.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular Skill Categories -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Popular Skill Categories</h2>
+      <p class="section-subtitle">Find the exact student expertise you are looking for</p>
+    </div>
+
+    <div class="category-grid">
+      {% for cat in categories %}
+        <a href="{% url 'search' %}?category={{ cat.slug }}" class="category-card">
+          <div class="category-icon-circle">
+            {% if cat.slug == 'photography' %}📷
+            {% elif cat.slug == 'graphic-design' %}🎨
+            {% elif cat.slug == 'web-development' %}💻
+            {% elif cat.slug == 'mehndi' %}✨
+            {% elif cat.slug == 'makeup' %}💄
+            {% elif cat.slug == 'tutoring' %}📚
+            {% elif cat.slug == 'video-editing' %}🎬
+            {% elif cat.slug == 'baking' %}🧁
+            {% elif cat.slug == 'art' %}🖌️
+            {% elif cat.slug == 'music' %}🎵
+            {% elif cat.slug == 'dance' %}💃
+            {% elif cat.slug == 'handmade-products' %}🧶
+            {% else %}⚡{% endif %}
+          </div>
+          <div class="category-name">{{ cat.name }}</div>
+          <div class="category-count">Explore Skills &rarr;</div>
+        </a>
+      {% empty %}
+        <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Explore all skill categories in search.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Verified Students -->
+{% if featured_students %}
+<section class="section" style="background: #fff;">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Featured Verified Students</h2>
+      <p class="section-subtitle">Recognized for quality work and authentic college credentials</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem;">
+      {% for student_prof in featured_students %}
+        <div class="card" style="text-align: center; padding: 1.5rem;">
+          <img src="{{ student_prof.user.profile.get_avatar_url }}" alt="{{ student_prof.user.username }}" class="avatar avatar-lg" style="margin: 0 auto 1rem;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.35rem; margin-bottom: 0.25rem;">
+            <h4 style="font-size: 1.1rem; font-weight: 700;">{{ student_prof.user.get_display_name }}</h4>
+            <span class="badge badge-verified">✓</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            {{ student_prof.college_name }} &bull; {{ student_prof.course }}
+          </p>
+          <div style="display: flex; justify-content: center; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+            {% for skill in student_prof.skills.all|slice:":3" %}
+              <span class="badge badge-tag">{{ skill.name }}</span>
+            {% endfor %}
+          </div>
+          <a href="{% url 'profile' student_prof.user.username %}" class="btn btn-outline btn-sm btn-block">View Portfolio</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Platform Benefits -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Why Choose SkillConnect?</h2>
+      <p class="section-subtitle">Empowering students while delivering real value to clients</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+      <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 1.8rem; margin-bottom: 0.75rem;">🎓</div>
+        <h4 style="font-weight: 700; margin-bottom: 0.4rem;">Genuine Student Verification</h4>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+          Every student provider undergoes college ID verification by platform administrators before receiving the Verified badge.
+        </p>
+      </div>
+
+      <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 1.8rem; margin-bottom: 0.75rem;">💸</div>
+        <h4 style="font-weight: 700; margin-bottom: 0.4rem;">Affordable & Fair Pricing</h4>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+          Get high-quality creative and technical work without commercial agency price markups. Support students directly.
+        </p>
+      </div>
+
+      <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 1.8rem; margin-bottom: 0.75rem;">🛡️</div>
+        <h4 style="font-weight: 700; margin-bottom: 0.4rem;">Safe & Moderated Platform</h4>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+          Dedicated admin review, order tracking, transparent ratings, and rapid moderation for a trustworthy experience.
+        </p>
+      </div>
+
+      <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 1.8rem; margin-bottom: 0.75rem;">📈</div>
+        <h4 style="font-weight: 700; margin-bottom: 0.4rem;">Real Portfolio Building</h4>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+          Students build a demonstrable track record of client work and positive reviews that employers genuinely value.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; padding: 4rem 0; text-align: center;">
+  <div class="container container-narrow">
+    <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem;">Ready to Join the Campus Creative Network?</h2>
+    <p style="font-size: 1.1rem; opacity: 0.95; margin-bottom: 2rem;">
+      Whether you have a skill to offer or need something built, designed, or photographed, SkillConnect is where campus collaboration begins.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'register' %}" class="btn btn-secondary btn-lg" style="color: var(--primary);">Create Free Account</a>
+      <a href="{% url 'about' %}" class="btn btn-outline btn-lg" style="border-color: #fff; color: #fff;">Learn More</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

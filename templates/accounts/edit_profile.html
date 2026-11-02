@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Edit Profile</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Update your account credentials, bio, and showcase information</p>
+    </div>
+    <a href="{% url 'profile' user.username %}" class="btn btn-secondary">View Profile</a>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Basic Profile -->
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--primary);">
+        Personal Information
+      </h3>
+
+      <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem;">
+        <img src="{{ user.profile.get_avatar_url }}" alt="{{ user.username }}" class="avatar avatar-lg">
+        <div style="flex: 1;">
+          <label class="form-label" for="id_profile_picture">Change Profile Picture</label>
+          {{ profile_form.profile_picture }}
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="id_full_name">Full Name</label>
+          {{ profile_form.full_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_email">Email Address</label>
+          {{ profile_form.email }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_phone">Phone / WhatsApp (Optional)</label>
+        {{ profile_form.phone }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_bio">Bio / About You</label>
+        {{ profile_form.bio }}
+        <span class="form-help">Write a short description to introduce yourself to clients and fellow students.</span>
+      </div>
+
+      <!-- Student Specific Section -->
+      {% if student_form %}
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1.25rem; color: var(--primary); border-top: 1px dashed var(--border); padding-top: 1.5rem;">
+          College & Skill Details
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label" for="id_college_name">College / University Name</label>
+          {{ student_form.college_name }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="id_course">Course / Degree</label>
+            {{ student_form.course }}
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_year_of_study">Year of Study</label>
+            {{ student_form.year_of_study }}
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="id_student_id">Roll / Student ID</label>
+            {{ student_form.student_id }}
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_college_email">College Email</label>
+            {{ student_form.college_email }}
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem; background: var(--bg); padding: 1rem; border-radius: var(--radius-md);">
+          {{ student_form.is_available }}
+          <div>
+            <label class="form-label" for="id_is_available" style="margin-bottom: 0;">Currently Accepting New Orders</label>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Turn off if you have exams or are busy with assignments</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select Your Skills</label>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; max-height: 250px; overflow-y: auto; border: 1px solid var(--border); padding: 1rem; border-radius: var(--radius-md);">
+            {{ student_form.skills }}
+          </div>
+        </div>
+      {% endif %}
+
+      <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+        <a href="{% url 'profile' user.username %}" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Review for Order #{{ order.order_number }} - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 580px;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⭐</div>
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Rate & Review Student</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Your feedback helps {{ order.student.get_display_name }} grow their student portfolio on SkillConnect
+    </p>
+  </div>
+
+  <!-- Order Reference Card -->
+  <div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Completed Order #{{ order.order_number }}</div>
+      <div style="font-weight: 700; font-size: 1rem;">{{ order.service.title|default:"Custom Service" }}</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">Provider: {{ order.student.get_display_name }}</div>
+    </div>
+    <span class="badge badge-verified">Completed</span>
+  </div>
+
+  <div class="form-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_rating">Star Rating (1 to 5)</label>
+        {{ form.rating }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_comment">Written Review</label>
+        {{ form.comment }}
+        <span class="form-help">Share how was your experience: quality of work, turnaround time, communication, etc.</span>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Publish Review ⭐</button>
+        <a href="{% url 'order_detail' order.id %}" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

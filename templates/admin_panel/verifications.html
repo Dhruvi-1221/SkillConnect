@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Verifications - SkillConnect Admin{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Student Identity Verifications</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Review uploaded college ID cards and approve "Verified Student" badges</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+  </div>
+
+  <!-- Filter tabs -->
+  <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem;">
+    <a href="{% url 'admin_verifications' %}?status=PENDING" class="tab-link {% if status_filter == 'PENDING' %}active{% endif %}">
+      ⏳ Pending Review
+    </a>
+    <a href="{% url 'admin_verifications' %}?status=VERIFIED" class="tab-link {% if status_filter == 'VERIFIED' %}active{% endif %}">
+      ✓ Approved (Verified)
+    </a>
+    <a href="{% url 'admin_verifications' %}?status=REJECTED" class="tab-link {% if status_filter == 'REJECTED' %}active{% endif %}">
+      ✕ Rejected
+    </a>
+    <a href="{% url 'admin_verifications' %}?status=ALL" class="tab-link {% if status_filter == 'ALL' %}active{% endif %}">
+      All Requests
+    </a>
+  </div>
+
+  <!-- Verifications Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem;">
+    {% for sp in verifications %}
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="padding: 1.5rem;">
+          <!-- Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <img src="{{ sp.user.profile.get_avatar_url }}" alt="{{ sp.user.username }}" class="avatar avatar-md">
+              <div>
+                <a href="{% url 'profile' sp.user.username %}" style="font-weight: 700; font-size: 1.05rem; color: var(--text-main);">
+                  {{ sp.user.get_display_name }}
+                </a>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">@{{ sp.user.username }} &bull; {{ sp.user.email }}</div>
+              </div>
+            </div>
+
+            <span class="badge {% if sp.verification_status == 'VERIFIED' %}badge-verified{% elif sp.verification_status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">
+              {{ sp.get_verification_status_display }}
+            </span>
+          </div>
+
+          <!-- College Details Table -->
+          <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 1rem;">
+            <div style="margin-bottom: 0.4rem;">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">College / University:</span><br>
+              <strong>{{ sp.college_name }}</strong>
+            </div>
+            <div style="margin-bottom: 0.4rem;">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Course & Year:</span><br>
+              {{ sp.course }} ({{ sp.year_of_study }})
+            </div>
+            <div style="margin-bottom: 0.4rem;">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Student ID / Roll No:</span><br>
+              {{ sp.student_id|default:"Not provided" }}
+            </div>
+            {% if sp.college_email %}
+              <div>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">College Email:</span><br>
+                {{ sp.college_email }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- ID Card Preview -->
+          <div style="margin-bottom: 1rem;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              Uploaded ID Card Document:
+            </span>
+            {% if sp.college_id_card %}
+              <a href="{{ sp.college_id_card.url }}" target="_blank" style="display: block; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; max-height: 160px;">
+                <img src="{{ sp.college_id_card.url }}" alt="College ID Card" style="width: 100%; height: 160px; object-fit: contain; background: #000;">
+              </a>
+              <span style="font-size: 0.75rem; color: var(--primary); margin-top: 4px; display: block;">Click to view full resolution &rarr;</span>
+            {% else %}
+              <div style="padding: 1.5rem; text-align: center; background: #f1f5f9; border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.85rem;">
+                No ID card uploaded yet (Student verified by email or credentials)
+              </div>
+            {% endif %}
+          </div>
+
+          {% if sp.verification_notes %}
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+              <strong>Previous Remarks:</strong> {{ sp.verification_notes }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Action Form -->
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: #fafafa;">
+          <form action="{% url 'admin_process_verification' sp.id %}" method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 0.75rem;">
+              <input type="text" name="notes" class="form-input" style="font-size: 0.82rem; padding: 0.4rem 0.65rem;" placeholder="Admin remarks (e.g. ID verified, clear stamp)...">
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="submit" name="action" value="APPROVE" class="btn btn-success btn-sm" style="flex: 1;">
+                ✓ Approve (Verify)
+              </button>
+              <button type="submit" name="action" value="REJECT" class="btn btn-danger btn-sm" style="flex: 1;">
+                ✕ Reject Request
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="empty-state-icon">🎓</div>
+        <h3 class="empty-state-title">No verification requests found</h3>
+        <p class="empty-state-text">There are currently no verification records matching "{{ status_filter }}".</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .tab-link {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 3px solid transparent;
+  }
+  .tab-link:hover { color: var(--primary); }
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+</style>
+{% endblock %}

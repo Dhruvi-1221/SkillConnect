@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Post by {{ post.student.get_display_name }} - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <article class="post-card" style="margin-bottom: 2rem;">
+    <!-- Post Header -->
+    <div class="post-header">
+      <div class="post-author">
+        <a href="{% url 'profile' post.student.username %}">
+          <img src="{{ post.student.profile.get_avatar_url }}" alt="{{ post.student.username }}" class="avatar avatar-sm">
+        </a>
+        <div>
+          <div class="author-name-row">
+            <a href="{% url 'profile' post.student.username %}" class="author-name">
+              {{ post.student.get_display_name }}
+            </a>
+            {% if post.student.student_profile.is_verified %}
+              <span class="badge badge-verified">✓ Verified Student</span>
+            {% endif %}
+          </div>
+          <div class="author-college">
+            {{ post.student.student_profile.college_name|default:"College Student" }}
+            {% if post.category %}
+              &bull; <span class="badge badge-category">{{ post.category.name }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        {% if user == post.student %}
+          <a href="{% url 'edit_post' post.id %}" class="btn btn-secondary btn-sm">Edit</a>
+          <a href="{% url 'delete_post' post.id %}" class="btn btn-danger btn-sm">Delete</a>
+        {% else %}
+          <a href="{% url 'submit_report' 'POST' post.id %}" class="btn btn-secondary btn-sm" title="Report Post">🚩</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Media Image -->
+    <div class="post-media-wrap">
+      <img src="{{ post.image.url }}" alt="{{ post.caption }}" class="post-media">
+    </div>
+
+    <!-- Actions & Details -->
+    <div class="post-body">
+      <div class="post-actions">
+        <div class="action-btn-group">
+          <!-- AJAX Like -->
+          <button class="action-btn btn-like {% if is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
+            <span class="like-icon" style="font-size: 1.3rem;">{% if is_liked %}♥{% else %}♡{% endif %}</span>
+            <span class="like-count" style="font-weight: 600;">{{ post.likes.count }}</span>
+          </button>
+
+          <!-- Share -->
+          <button class="action-btn btn-share" data-url="{{ request.build_absolute_uri }}">
+            <span style="font-size: 1.1rem;">↗</span> Share
+          </button>
+        </div>
+
+        <div class="post-time">
+          {{ post.created_at|date:"F d, Y \a\\t H:i" }}
+        </div>
+      </div>
+
+      {% if post.caption %}
+        <p class="post-caption" style="font-size: 1rem; margin-bottom: 0.75rem;">
+          <strong>{{ post.student.username }}</strong> {{ post.caption }}
+        </p>
+      {% endif %}
+
+      {% if post.skill_tags %}
+        <div class="post-tags" style="margin-bottom: 1rem;">
+          {% for tag in post.skill_tags.split %}
+            <span class="badge badge-tag" style="font-size: 0.8rem; padding: 0.25rem 0.6rem;">#{{ tag|cut:"," }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- All Comments Section -->
+    <div class="post-comments-wrap" style="padding: 1.5rem;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">
+        Comments (<span id="comment-count-{{ post.id }}">{{ post.comments.count }}</span>)
+      </h3>
+
+      <div class="comments-list" id="comments-list-{{ post.id }}" style="max-height: 400px; margin-bottom: 1.25rem;">
+        {% for comment in post.comments.all %}
+          <div class="comment-item" style="justify-content: space-between; align-items: flex-start; padding: 0.4rem 0;">
+            <div style="display: flex; gap: 0.6rem;">
+              <a href="{% url 'profile' comment.user.username %}">
+                <img src="{{ comment.user.profile.get_avatar_url }}" alt="{{ comment.user.username }}" class="avatar avatar-sm">
+              </a>
+              <div>
+                <a href="{% url 'profile' comment.user.username %}" class="comment-user">
+                  {{ comment.user.get_display_name }}
+                </a>
+                <span class="comment-text" style="display: block; margin-top: 2px;">{{ comment.content }}</span>
+                <span style="font-size: 0.72rem; color: var(--text-light);">{{ comment.created_at|timesince }} ago</span>
+              </div>
+            </div>
+
+            {% if user == comment.user or user == post.student or user.is_platform_admin %}
+              <form action="{% url 'delete_comment' comment.id %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; cursor: pointer; color: var(--text-light); font-size: 0.8rem;" title="Delete Comment">
+                  ✕
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-size: 0.88rem;">No comments yet. Start the conversation!</p>
+        {% endfor %}
+      </div>
+
+      {% if user.is_authenticated %}
+        <form class="comment-form ajax-comment-form" data-post-id="{{ post.id }}">
+          <input type="text" class="comment-input" placeholder="Write a comment..." required>
+          <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+        </form>
+      {% else %}
+        <div class="alert alert-info" style="margin-bottom: 0;">
+          <a href="{% url 'login' %}?next={{ request.path }}" style="font-weight: 600; text-decoration: underline;">Log in</a> to like or comment on this post.
+        </div>
+      {% endif %}
+    </div>
+  </article>
+
+</div>
+{% endblock %}

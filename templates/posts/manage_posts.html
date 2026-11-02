@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Posts - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Manage Your Posts</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Review, edit, or delete your portfolio showcase items</p>
+    </div>
+    <a href="{% url 'create_post' %}" class="btn btn-primary">➕ Create New Post</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for post in posts %}
+      <div class="card" style="display: flex; flex-direction: column;">
+        <img src="{{ post.image.url }}" alt="{{ post.caption|truncatewords:4 }}" style="height: 200px; width: 100%; object-fit: cover;">
+        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            {% if post.category %}
+              <span class="badge badge-category" style="margin-bottom: 0.5rem;">{{ post.category.name }}</span>
+            {% endif %}
+            <p style="font-size: 0.9rem; line-height: 1.4; margin-bottom: 0.75rem;">{{ post.caption|truncatewords:20 }}</p>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+              ♥ {{ post.likes.count }} likes &bull; 💬 {{ post.comments.count }} comments &bull; {{ post.created_at|date:"M d, Y" }}
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
+            <a href="{% url 'post_detail' post.id %}" class="btn btn-outline btn-sm" style="flex: 1;">View</a>
+            <a href="{% url 'edit_post' post.id %}" class="btn btn-secondary btn-sm" style="flex: 1;">Edit</a>
+            <a href="{% url 'delete_post' post.id %}" class="btn btn-danger btn-sm">Delete</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="empty-state-icon">📸</div>
+        <h3 class="empty-state-title">You haven't posted any work yet</h3>
+        <p class="empty-state-text">Showcase your skills through pictures and start attracting student clients!</p>
+        <a href="{% url 'create_post' %}" class="btn btn-primary">Create Your First Post</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

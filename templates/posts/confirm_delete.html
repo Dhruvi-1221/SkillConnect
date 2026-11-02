@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Delete - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 4rem; padding-bottom: 5rem; max-width: 500px;">
+  <div class="card" style="padding: 2rem; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+    <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">Delete Post?</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+      Are you sure you want to delete this post? This action cannot be undone.
+    </p>
+
+    <div style="margin-bottom: 1.5rem; border-radius: var(--radius-md); overflow: hidden;">
+      <img src="{{ post.image.url }}" alt="Preview" style="max-height: 200px; width: 100%; object-fit: cover;">
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div style="display: flex; gap: 1rem;">
+        <button type="submit" class="btn btn-danger btn-block btn-lg">Yes, Delete Post</button>
+        <a href="{% url 'post_detail' post.id %}" class="btn btn-secondary btn-block btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

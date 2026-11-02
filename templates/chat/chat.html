@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat & Messages - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide">
+  <div class="chat-window">
+
+    <!-- Left Sidebar: Conversations List -->
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <h2 style="font-size: 1.25rem; font-weight: 800;">Messages</h2>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Direct one-to-one campus chat</span>
+      </div>
+
+      <div class="conv-list">
+        {% for conv in conversations %}
+          {% with partner=conv|slice:"" %}
+          {% endwith %}
+          <a href="{% url 'chat_conversation' conv.id %}" class="conv-item {% if active_conversation and active_conversation.id == conv.id %}active{% endif %}">
+            <img src="{% if conv.participant1 == user %}{{ conv.participant2.profile.get_avatar_url }}{% else %}{{ conv.participant1.profile.get_avatar_url }}{% endif %}"
+                 alt="User" class="avatar avatar-sm">
+
+            <div class="conv-info">
+              <div class="conv-name-row">
+                <span class="conv-name">
+                  {% if conv.participant1 == user %}
+                    {{ conv.participant2.get_display_name }}
+                  {% else %}
+                    {{ conv.participant1.get_display_name }}
+                  {% endif %}
+                </span>
+                {% if conv.get_last_message %}
+                  <span class="conv-time">{{ conv.get_last_message.created_at|date:"H:i" }}</span>
+                {% endif %}
+              </div>
+              <div class="conv-snippet">
+                {% if conv.get_last_message %}
+                  {{ conv.get_last_message.content|truncatechars:35 }}
+                {% else %}
+                  <span style="font-style: italic;">No messages yet</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.88rem;">
+            No conversations yet. Visit a student profile or place an order to start chatting!
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right Pane: Active Conversation Thread -->
+    <div class="chat-main">
+      {% if active_conversation and other_user %}
+        <!-- Header -->
+        <div class="chat-header">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <a href="{% url 'profile' other_user.username %}">
+              <img src="{{ other_user.profile.get_avatar_url }}" alt="{{ other_user.username }}" class="avatar avatar-sm">
+            </a>
+            <div>
+              <a href="{% url 'profile' other_user.username %}" style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
+                {{ other_user.get_display_name }}
+              </a>
+              {% if other_user.student_profile and other_user.student_profile.is_verified %}
+                <span class="badge badge-verified" style="font-size: 0.7rem; padding: 0.1rem 0.35rem;">✓ Verified Student</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <a href="{% url 'profile' other_user.username %}" class="btn btn-outline btn-sm">
+            View Profile
+          </a>
+        </div>
+
+        <!-- Messages Stream -->
+        <div class="chat-messages" id="chatMessages">
+          {% for msg in messages_list %}
+            <div class="msg-bubble {% if msg.sender == user %}sent{% else %}received{% endif %}">
+              <div class="msg-content">{{ msg.content }}</div>
+              <div class="msg-time">{{ msg.created_at|date:"H:i" }}</div>
+            </div>
+          {% empty %}
+            <div style="text-align: center; color: var(--text-muted); margin: auto; font-size: 0.9rem;">
+              Say hello to {{ other_user.first_name|default:other_user.username }}! Discuss project details or questions.
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Input Bar with AJAX -->
+        <form id="chatForm" class="chat-input-bar" data-conversation-id="{{ active_conversation.id }}" data-last-message-id="{% if messages_list.last %}{{ messages_list.last.id }}{% else %}0{% endif %}">
+          <input type="text" id="messageInput" class="chat-input" placeholder="Type a message to {{ other_user.first_name }}..." autocomplete="off" required>
+          <button type="submit" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 0.6rem 1.25rem;">
+            Send 🚀
+          </button>
+        </form>
+      {% else %}
+        <!-- Empty State -->
+        <div style="margin: auto; text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 0.5rem;">💬</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Select a conversation</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 320px; margin: 0 auto;">
+            Choose a contact from the list on the left or visit any student's profile to start a new chat.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

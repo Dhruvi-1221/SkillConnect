@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}About SkillConnect - The Student Freelancing Community{% endblock %}
+
+{% block content %}
+<div class="container container-narrow" style="padding-top: 3rem; padding-bottom: 4rem;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <div class="hero-tag"><span>⚡</span> Our Mission</div>
+    <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">About SkillConnect</h1>
+    <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.6;">
+      SkillConnect bridges the gap between campus talent and real-world clients. We provide students with a secure platform to showcase creative and technical abilities, earn income, and build verifiable professional portfolios.
+    </p>
+  </div>
+
+  <div class="card" style="padding: 2.25rem; margin-bottom: 2rem;">
+    <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">The Problem We Solve</h2>
+    <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 1.25rem;">
+      College students possess immense talent in photography, poster design, video editing, coding, tutoring, and handmade crafts. However, standard commercial freelancing websites are overly saturated, charge huge commission fees, and make it nearly impossible for university students to get noticed.
+    </p>
+    <p style="color: var(--text-muted); line-height: 1.7;">
+      On the other hand, fellow students, campus event organizers, and local clients are constantly looking for talented peers to design fest banners, shoot birthday events, teach math, or build website prototypes at affordable student rates. SkillConnect brings both sides together.
+    </p>
+  </div>
+
+  <div class="card" style="padding: 2.25rem; margin-bottom: 2rem;">
+    <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">Authentic Student Verification</h2>
+    <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem;">
+      Trust is the cornerstone of SkillConnect. Students submit their university details and college ID cards, which are thoroughly reviewed by our platform administrators. Once verified, students receive our official <strong>Verified Student</strong> badge, giving clients confidence in authentic, reliable service.
+    </p>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <span class="badge badge-verified" style="padding: 0.5rem 1rem; font-size: 0.88rem;">✓ Official College ID Review</span>
+      <span class="badge badge-verified" style="padding: 0.5rem 1rem; font-size: 0.88rem;">✓ Verified Campus Badging</span>
+      <span class="badge badge-verified" style="padding: 0.5rem 1rem; font-size: 0.88rem;">✓ Safe One-to-One Chat</span>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Join SkillConnect Today 🚀</a>
+  </div>
+</div>
+{% endblock %}

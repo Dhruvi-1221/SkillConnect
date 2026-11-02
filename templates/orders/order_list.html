@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Orders & Tracking - SkillConnect{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Orders & Tracking</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Monitor real-time progress, communication, and order completion</p>
+    </div>
+
+    <!-- Status filter dropdown -->
+    <div>
+      <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="hidden" name="tab" value="{{ tab }}">
+        <select name="status" class="form-select" onchange="this.form.submit()" style="width: auto;">
+          <option value="">All Statuses</option>
+          {% for code, label in status_choices %}
+            <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        {% if status_filter %}
+          <a href="{% url 'order_list' %}?tab={{ tab }}" class="btn btn-secondary btn-sm">Clear</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Role Tabs -->
+  <div style="display: flex; gap: 1rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem;">
+    <a href="{% url 'order_list' %}?tab=customer{% if status_filter %}&status={{ status_filter }}{% endif %}"
+       class="tab-link {% if tab == 'customer' or tab == 'all' and not user.is_student %}active{% endif %}">
+      🛒 Booked by Me (Customer: {{ orders_as_customer.count }})
+    </a>
+    {% if user.is_student %}
+      <a href="{% url 'order_list' %}?tab=student{% if status_filter %}&status={{ status_filter }}{% endif %}"
+         class="tab-link {% if tab == 'student' %}active{% endif %}">
+        📥 Incoming Orders (Student Provider: {{ orders_as_student.count }})
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Customer Orders List -->
+  {% if tab == 'customer' or tab == 'all' and not user.is_student %}
+    <div class="card table-responsive" style="margin-bottom: 2.5rem;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Service</th>
+            <th>Student Provider</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Requested Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders_as_customer %}
+            <tr>
+              <td><strong>#{{ o.order_number }}</strong></td>
+              <td>
+                <a href="{% url 'order_detail' o.id %}" style="font-weight: 600;">
+                  {{ o.service.title|default:"Custom Service" }}
+                </a>
+              </td>
+              <td>
+                <a href="{% url 'profile' o.student.username %}">
+                  {{ o.student.get_display_name }}
+                  {% if o.student.student_profile.is_verified %}<span class="badge badge-verified">✓</span>{% endif %}
+                </a>
+              </td>
+              <td><strong>₹{{ o.price }}</strong></td>
+              <td>
+                <span class="badge {% if o.status == 'COMPLETED' %}badge-verified{% elif o.status == 'IN_PROGRESS' %}badge-category{% elif o.status == 'REQUESTED' %}badge-pending{% elif o.status == 'REJECTED' or o.status == 'CANCELLED' %}badge-rejected{% else %}badge-category{% endif %}">
+                  {{ o.get_status_display }}
+                </span>
+              </td>
+              <td>{{ o.created_at|date:"M d, Y" }}</td>
+              <td>
+                <a href="{% url 'order_detail' o.id %}" class="btn btn-outline btn-sm">Track Progress 🚀</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                You haven't requested any services yet.
+                <div style="margin-top: 1rem;">
+                  <a href="{% url 'service_list' %}" class="btn btn-primary">Browse Campus Services</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  <!-- Student Orders List -->
+  {% if tab == 'student' or tab == 'all' and user.is_student %}
+    {% if tab == 'all' and user.is_student %}
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; margin-top: 2rem;">
+        Incoming Orders to Deliver (Student)
+      </h3>
+    {% endif %}
+
+    <div class="card table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Service Requested</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Preferred Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders_as_student %}
+            <tr>
+              <td><strong>#{{ o.order_number }}</strong></td>
+              <td>
+                <a href="{% url 'profile' o.customer.username %}">{{ o.customer.get_display_name }}</a>
+              </td>
+              <td>
+                <a href="{% url 'order_detail' o.id %}" style="font-weight: 600;">
+                  {{ o.service.title|default:"Custom Service" }}
+                </a>
+              </td>
+              <td><strong>₹{{ o.price }}</strong></td>
+              <td>
+                <span class="badge {% if o.status == 'COMPLETED' %}badge-verified{% elif o.status == 'IN_PROGRESS' %}badge-category{% elif o.status == 'REQUESTED' %}badge-pending{% elif o.status == 'REJECTED' or o.status == 'CANCELLED' %}badge-rejected{% else %}badge-category{% endif %}">
+                  {{ o.get_status_display }}
+                </span>
+              </td>
+              <td>{{ o.preferred_date|default:"Flexible" }}</td>
+              <td>
+                <a href="{% url 'order_detail' o.id %}" class="btn btn-primary btn-sm">Manage & Update</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                No incoming orders received matching this filter.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .tab-link {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 3px solid transparent;
+  }
+  .tab-link:hover {
+    color: var(--primary);
+  }
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+</style>
+{% endblock %}

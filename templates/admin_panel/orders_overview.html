@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Orders Overview - SkillConnect Admin{% endblock %}
+
+{% block content %}
+<div class="container container-wide" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">Orders Overview</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Monitor student transactions, delivery timelines, and order statuses across campus</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+  </div>
+
+  <!-- Status filter -->
+  <div class="card" style="padding: 1.25rem; margin-bottom: 2rem;">
+    <form method="GET" style="display: flex; gap: 1rem; align-items: center;">
+      <span style="font-weight: 600; font-size: 0.9rem;">Filter by Status:</span>
+      <select name="status" class="form-select" onchange="this.form.submit()" style="width: auto;">
+        <option value="">All Statuses</option>
+        {% for code, label in status_choices %}
+          <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      {% if status_filter %}
+        <a href="{% url 'admin_orders' %}" class="btn btn-secondary btn-sm">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Orders table -->
+  <div class="card table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Student Provider</th>
+          <th>Service Title</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th>Ordered At</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+          <tr>
+            <td><strong>#{{ o.order_number }}</strong></td>
+            <td>
+              <a href="{% url 'profile' o.customer.username %}">{{ o.customer.get_display_name }}</a>
+            </td>
+            <td>
+              <a href="{% url 'profile' o.student.username %}">
+                {{ o.student.get_display_name }}
+                {% if o.student.student_profile.is_verified %}<span class="badge badge-verified">✓</span>{% endif %}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'order_detail' o.id %}">{{ o.service.title|default:"Custom Service" }}</a>
+            </td>
+            <td><strong>₹{{ o.price }}</strong></td>
+            <td>
+              <span class="badge {% if o.status == 'COMPLETED' %}badge-verified{% elif o.status == 'REQUESTED' %}badge-pending{% elif o.status == 'REJECTED' or o.status == 'CANCELLED' %}badge-rejected{% else %}badge-category{% endif %}">
+                {{ o.get_status_display }}
+              </span>
+            </td>
+            <td>{{ o.created_at|date:"M d, Y H:i" }}</td>
+            <td>
+              <a href="{% url 'order_detail' o.id %}" class="btn btn-outline btn-sm">View Details</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              No orders found matching the filter.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

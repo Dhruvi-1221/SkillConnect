@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SkillConnect - Student Skills & Services Marketplace{% endblock %}</title>
+  <meta name="description" content="Discover student skills, creative portfolios, and book affordable student services. Built for college talent.">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="{% if user.is_authenticated %}{% url 'home' %}{% else %}{% url 'landing' %}{% endif %}" class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-name">Skill<span>Connect</span></div>
+      </a>
+
+      <!-- Search Bar -->
+      <form action="{% url 'search' %}" method="GET" class="nav-search">
+        <span class="nav-search-icon">🔍</span>
+        <input type="text" name="q" class="nav-search-input" placeholder="Search photography, graphic design, coding, tutoring..." value="{{ request.GET.q }}">
+      </form>
+
+      <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle menu">☰</button>
+
+      <div class="nav-links" id="navLinks">
+        {% if user.is_authenticated %}
+          <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <span>🏠</span> Feed
+          </a>
+          <a href="{% url 'service_list' %}" class="nav-link {% if request.resolver_match.url_name == 'service_list' %}active{% endif %}">
+            <span>💼</span> Services
+          </a>
+          <a href="{% url 'order_list' %}" class="nav-link {% if request.resolver_match.url_name == 'order_list' %}active{% endif %}">
+            <span>📦</span> Orders
+          </a>
+          <a href="{% url 'chat' %}" class="nav-link {% if 'chat' in request.resolver_match.url_name %}active{% endif %}">
+            <span>💬</span> Chat
+          </a>
+          <a href="{% url 'notifications' %}" class="nav-link badge-pill {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+            <span>🔔</span> Notifications
+            {% if unread_notifications_count > 0 %}
+              <span class="notification-count">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </a>
+
+          <!-- User Profile Dropdown -->
+          <div class="user-nav-dropdown">
+            <button class="avatar-btn">
+              <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}https://api.dicebear.com/7.x/initials/svg?seed={{ user.username }}&backgroundColor=4f46e5{% endif %}" alt="{{ user.username }}" class="avatar avatar-sm">
+              <span style="font-weight: 600; font-size: 0.9rem;">{{ user.first_name|default:user.username }}</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">▼</span>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-header">
+                <div class="dropdown-name">{{ user.get_display_name }}</div>
+                <div class="dropdown-role">
+                  {{ user.get_role_display }}
+                  {% if is_verified_student %}
+                    <span class="badge badge-verified" style="margin-left: 4px;">✓ Verified</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <a href="{% url 'profile' user.username %}" class="dropdown-item">👤 View Profile</a>
+
+              {% if is_student %}
+                <a href="{% url 'student_dashboard' %}" class="dropdown-item">📊 Student Dashboard</a>
+                <a href="{% url 'create_post' %}" class="dropdown-item">➕ Create Post</a>
+                <a href="{% url 'manage_posts' %}" class="dropdown-item">🖼 Manage Posts</a>
+                <a href="{% url 'create_service' %}" class="dropdown-item">💼 Add Service</a>
+                <a href="{% url 'manage_services' %}" class="dropdown-item">🛠 Manage Services</a>
+                <a href="{% url 'verification' %}" class="dropdown-item">
+                  🎓 College Verification
+                  {% if is_verified_student %}
+                    <span style="color: var(--success); font-size: 0.8rem;">(Active)</span>
+                  {% else %}
+                    <span style="color: var(--warning); font-size: 0.8rem;">(Pending)</span>
+                  {% endif %}
+                </a>
+              {% endif %}
+
+              {% if user.is_platform_admin %}
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'admin_dashboard' %}" class="dropdown-item" style="color: var(--primary); font-weight: 600;">
+                  ⚡ Admin Panel
+                </a>
+              {% endif %}
+
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'edit_profile' %}" class="dropdown-item">⚙️ Profile Settings</a>
+              <a href="{% url 'interests_setup' %}" class="dropdown-item">🎯 Select Interests</a>
+              <a href="{% url 'logout' %}" class="dropdown-item" style="color: var(--danger);">🚪 Logout</a>
+            </div>
+          </div>
+        {% else %}
+          <a href="{% url 'search' %}" class="nav-link">Explore Skills</a>
+          <a href="{% url 'about' %}" class="nav-link">About Us</a>
+          <a href="{% url 'contact' %}" class="nav-link">Help</a>
+          <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Log In</a>
+          <a href="{% url 'register' %}" class="btn btn-primary btn-sm">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Global Messages Banner -->
+  {% if messages %}
+    <div class="container messages-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          <span>{{ message }}</span>
+          <button class="alert-close" aria-label="Dismiss">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand" style="margin-bottom: 0.75rem;">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-name">Skill<span>Connect</span></div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; max-width: 320px;">
+            The student-powered marketplace and social portfolio. Discover verified campus talent for photography, design, web development, makeup, tutoring, and more.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="{% url 'search' %}?type=students">Student Talent</a></li>
+            <li><a href="{% url 'service_list' %}">Campus Services</a></li>
+            <li><a href="{% url 'search' %}?category=photography">Photography</a></li>
+            <li><a href="{% url 'search' %}?category=graphic-design">Graphic Design</a></li>
+            <li><a href="{% url 'search' %}?category=web-development">Web Development</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>For Students</h4>
+          <ul>
+            <li><a href="{% url 'register' %}?role=STUDENT">Become a Provider</a></li>
+            <li><a href="{% url 'about' %}">How Verification Works</a></li>
+            <li><a href="{% url 'login' %}">Student Login</a></li>
+            <li><a href="{% url 'contact' %}">Support & Guidelines</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="{% url 'about' %}">About SkillConnect</a></li>
+            <li><a href="{% url 'contact' %}">Contact Team</a></li>
+            <li><a href="{% url 'admin_dashboard' %}">Admin Console</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 SkillConnect. All rights reserved. Connecting student creativity with opportunities.
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
